@@ -1,23 +1,13 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Arena;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
-import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStartEvent;
-import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 
 public class ArenaManager{
@@ -150,6 +140,7 @@ public class ArenaManager{
     	  locY = Double.parseDouble( txt.split("%")[1] );
     	  locZ = Double.parseDouble( txt.split("%")[2] );
     	  Location locASpawn = new Location(HGAPI.getPlugin().getServer().getWorld(wn), locX, locY, locZ);
+    	  
     	  HGAPI.getPlugin().getLogger().info("Spawnpoint for first team: " + txt);
           arena.setFirstTeamSpawnLocation(locASpawn);
     	  

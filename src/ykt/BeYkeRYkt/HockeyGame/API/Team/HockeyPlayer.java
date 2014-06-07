@@ -1,5 +1,6 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Team;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
@@ -7,14 +8,18 @@ import ykt.BeYkeRYkt.HockeyGame.API.Classes.ClassType;
 
 public class HockeyPlayer{
 	
-	private Player player = null;
+	private String name;
 	private ClassType type = null;
 	private Team team = null;
 	private Arena arena = null;
 	private boolean ready = false;
 	
 	public HockeyPlayer(Player player){
-		this.player = player;
+		this.name = player.getName();
+	}
+	
+	public String getName(){
+		return name;
 	}
 	
 	public Arena getArena(){
@@ -43,7 +48,7 @@ public class HockeyPlayer{
 	}
 	
 	public Player getBukkitPlayer(){
-		return player;
+		return Bukkit.getPlayer(name);
 	}
 	
 	public boolean isReady(){

@@ -1,13 +1,10 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Events;
 
-import java.util.List;
-
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
-import ykt.BeYkeRYkt.HockeyGame.API.Classes.ClassType;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 
 public class PlayerLeaveArenaEvent extends Event implements Cancellable{

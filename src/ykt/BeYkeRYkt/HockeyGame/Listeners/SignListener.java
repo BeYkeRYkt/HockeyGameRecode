@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -22,7 +21,8 @@ public class SignListener implements Listener{
 		Player player = e.getPlayer();
 		if (e.getLine(0).equalsIgnoreCase("[HockeyGame]")) {
 			if (!player.hasPermission("hg.setup")) {
-				player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
+				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
+				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString());
 				e.setCancelled(true);
 				e.getBlock().breakNaturally();
 				return;
@@ -60,7 +60,8 @@ public class SignListener implements Listener{
 		Sign sign = (Sign) e.getBlock().getState();
 		if (sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "[" + ChatColor.WHITE + HGAPI.getPlugin().getName() + ChatColor.RED + "]")) {
 			if (!player.hasPermission("hg.setup")) {
-				player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
+				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
+				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString());
 				e.setCancelled(true);
 				return;
 			}

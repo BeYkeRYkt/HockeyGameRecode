@@ -40,7 +40,11 @@ public enum Lang {
     FIRST_TEAM_NULL("first-team-null", "&4Name for second team not stored!"),
     SECOND_TEAM_NULL("first-team-null", "&4Name for second team not stored!"),
     ENTER_NAME_THE_SECOND_TEAM("enter-name-the-second-team", "&aEnter the name of the second team."), 
-    PUCK_NAME("puck-name", "&2Puck");
+    PUCK_NAME("puck-name", "&2Puck"), 
+    TEAM_DOES_NOT_EXIT("team-does-not-exit", "&4Team does not exist!"),
+    CREATE_ARENA_CANCELLED("create-arena-cancelled", "&aCreation of arena was cancelled."),
+    PLAYER_NOT_READY("player-not-ready", "&4You're not ready. Choose your class."),
+    PLAYER_READY("player-is-ready", "&7 is Ready!");
 
     private String path;
     private String def;

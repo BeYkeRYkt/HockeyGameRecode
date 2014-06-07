@@ -10,7 +10,6 @@ public class PlayerManager{
 	
 	public PlayerManager(HGAPI api){
 		this.api = api;
-		
 	}
 	
 	public HashMap<String, HockeyPlayer> getPlayers(){

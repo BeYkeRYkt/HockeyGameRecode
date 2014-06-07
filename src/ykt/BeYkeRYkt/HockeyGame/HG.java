@@ -3,11 +3,9 @@ package ykt.BeYkeRYkt.HockeyGame;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.permissions.Permission;
@@ -52,6 +50,7 @@ public class HG extends JavaPlugin{
 				fc.addDefault("Enable-updater", true);
 				fc.addDefault("Debug", false);
 				fc.addDefault("Lang", "English");
+				fc.addDefault("Game.puck.material", "RECORD_7");
 				fc.options().copyDefaults(true);
 				saveConfig();
 				fc.options().copyDefaults(false);
@@ -107,9 +106,11 @@ public class HG extends JavaPlugin{
 	
 	public void loadLang() {
 	    File lang = new File(getDataFolder() + "/lang/", this.lang + ".yml");
+	    File dir = new File(getDataFolder(), "/lang/");
 	    if (!lang.exists()) {
 	        try {
 	            getDataFolder().mkdir();
+	            dir.mkdir();
 	            lang.createNewFile();
 	            InputStream defConfigStream = this.getResource("/lang/" + this.lang + ".yml");
 	            if (defConfigStream != null) {
@@ -120,8 +121,9 @@ public class HG extends JavaPlugin{
 	        } catch(IOException e) {
 	            e.printStackTrace(); // So they notice
 	            getLogger().severe("[HockeyGame] Couldn't create language file.");
-	            getLogger().severe("[HockeyGame] This is a fatal error. Now disabling");
-	            this.setEnabled(false); // Without it loaded, we can't send them messages
+	            getLogger().severe("[HockeyGame] This is a fatal error. Now reloading...");
+	            dir.mkdir();
+	            loadLang();
 	        }
 	    }
 	    YamlConfiguration conf = YamlConfiguration.loadConfiguration(lang);

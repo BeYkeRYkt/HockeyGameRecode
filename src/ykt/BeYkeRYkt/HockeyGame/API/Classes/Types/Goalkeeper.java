@@ -1,11 +1,9 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Classes.Types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Classes.ClassType;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 

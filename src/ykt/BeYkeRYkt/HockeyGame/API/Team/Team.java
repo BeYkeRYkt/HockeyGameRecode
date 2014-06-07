@@ -37,6 +37,12 @@ public class Team{
 		this.color = color;
 	}
 	
+	public void MassTeleportToLocation(Location location) {
+        for(HockeyPlayer players: getMembers()){
+        	players.getBukkitPlayer().teleport(location);
+        }
+	}
+	
 	//GET MEMBERS
 	public List<HockeyPlayer> getMembers(){
 		return players;
@@ -57,33 +63,27 @@ public class Team{
 	//SET MEMBERS
 	public void addWinger(HockeyPlayer player){
 		getWingers().add(player);
-		getMembers().add(player);
 	}
 	
 	public void addDefend(HockeyPlayer player){
 		getDefends().add(player);
-		getMembers().add(player);
 	}
 	
 	public void setGoalkeeper(HockeyPlayer player){
 		this.goalkeeper = player;
-		getMembers().add(player);
 	}
 	
 	
 	//REMOVE MEMBERS
 	public void removeWinger(HockeyPlayer player){
 		getWingers().remove(player);
-		getMembers().remove(player);
 	}
 	
 	public void removeDefend(HockeyPlayer player){
 		getDefends().remove(player);
-		getMembers().remove(player);
 	}
 	
 	public void removeGoalkeeper(){
-		getMembers().remove(getGoalKeeper());
 		this.goalkeeper = null;
 	}
 }

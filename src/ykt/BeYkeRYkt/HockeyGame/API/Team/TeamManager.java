@@ -1,20 +1,11 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Team;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
@@ -35,7 +26,7 @@ public class TeamManager{
 		getTeams().put(team.getName(), team);
 	}
 	
-	public void removeArena(Team team){
+	public void removeTeam(Team team){
 		getTeams().remove(team.getName());
 	}
 
