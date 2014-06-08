@@ -50,7 +50,12 @@ public class HG extends JavaPlugin{
 				fc.addDefault("Enable-updater", true);
 				fc.addDefault("Debug", false);
 				fc.addDefault("Lang", "English");
+				fc.addDefault("Game.MatchTimer", 200);
 				fc.addDefault("Game.puck.material", "RECORD_7");
+				fc.addDefault("Game.MusicMatch", true);
+				fc.addDefault("Game.PowerBeat.Winger", 0.6);
+				fc.addDefault("Game.PowerBeat.Defender", 0.5);
+				fc.addDefault("Game.PowerBeat.Goalkeeper", 0.3);
 				fc.options().copyDefaults(true);
 				saveConfig();
 				fc.options().copyDefaults(false);

@@ -2,11 +2,14 @@ package ykt.BeYkeRYkt.HockeyGame.API.Arena;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -17,6 +20,7 @@ import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
+import ykt.BeYkeRYkt.HockeyGame.Runnables.ArenaRunnable;
 import ykt.BeYkeRYkt.HockeyGame.Runnables.CountToStartRunnable;
 
 public class Arena{
@@ -39,6 +43,9 @@ public class Arena{
 	private Location blue_spawn;
 	private World world;
 	private CountToStartRunnable countrunnable;
+	private ArenaRunnable mainrun;
+	private Puck puckentity;
+	
 	
 	public Arena(String arenaName){
 		this.name = arenaName;
@@ -270,6 +277,7 @@ public class Arena{
 	public void startArena(){
 		MatchStartEvent event = new MatchStartEvent(getPlayers(), this);
 		Bukkit.getPluginManager().callEvent(event);
+		getCountToStartRunnable().cancel();
 		
 		if(!event.isCancelled()){
 
@@ -277,7 +285,7 @@ public class Arena{
 			setupPuck();
 			}
 			
-			getWorld().dropItemNaturally(getPuckLocation(), getPuck());
+			Item item = getWorld().dropItemNaturally(getPuckLocation(), getPuck());
 			
 			//MASS TELEPORT
 			getFirstTeam().MassTeleportToLocation(getFirstTeamSpawnLocation());
@@ -285,8 +293,41 @@ public class Arena{
 			
 			setRunning(true);
 			
-			//StartMainRunnable();
+			Puck puck = new Puck(this, item);
+			
+			setPuckEntity(puck);
+			startMainRunnable(puck);
+			
+			if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
+				startPlayMusic();
+			}
 		}
+	}
+
+	private void startPlayMusic() {	
+		Random random = new Random();
+		int amount = random.nextInt(9);
+		
+		if(amount == 0){
+			getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_3);
+			}else if(amount == 1){
+				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_4);
+			}else if(amount == 2){
+				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_5);
+			}else if(amount == 3){
+				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_6);
+			}else if(amount == 4){
+				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_7);
+	        }else if(amount == 5){
+	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_8);
+		    }else if(amount == 6){
+		    	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_9);
+	        }else if(amount == 7){
+	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_10);
+	        }else if(amount == 8){
+	        	//getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_11);
+	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_12);
+	        }
 	}
 
 	public Team getTeam(String teamName) {
@@ -322,6 +363,59 @@ public class Arena{
 	   this.countrunnable = new CountToStartRunnable(this);
 	   getCountToStartRunnable().runTaskTimer(HGAPI.getPlugin(), 0, 20);
 	}
+		
+	public Puck getPuckEntity(){
+		return puckentity;
+	}
+	
+	public void setPuckEntity(Puck puck){
+		this.puckentity = puck;
+	}
+	
+	public ArenaRunnable getMainRunnable(){
+		return mainrun;
+	}
+	
+	public void startMainRunnable(Puck puck){
+				
+		int seconds = HGAPI.getPlugin().getConfig().getInt("Game.MatchTimer");
+		this.mainrun = new ArenaRunnable(this, puck, seconds);
+		getMainRunnable().runTaskTimer(HGAPI.getPlugin(), 0, 20);
+		
+	}
+	
+	public void respawnPuck(){
+		Item item = getWorld().dropItemNaturally(getPuckLocation(), getPuck());
+		Puck puck = new Puck(this, item);
+		setPuckEntity(puck);
+		getMainRunnable().setPuck(puck);
+		
+		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.ENDER_SIGNAL, 1);
+		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.SMOKE, 1);
+		
+		broadcastMessage(Lang.MATCH_CONTINUES.toString());
+	}
+
+	public void stopArena() {
+	   for(HockeyPlayer player: getPlayers()){
+		   leavePlayer(player);
+		   setRunning(false);
+	   }
+	   
+		getPuckEntity().getItem().remove();
+		getPuckEntity().clearItem();
+		getPuckEntity().clearPlayer();
+	   
+	   getMainRunnable().cancel();
+	   red_score = 0;
+	   blue_scores = 0;
+	   countrunnable = null;
+	   mainrun = null;
+	   puckentity = null;
+		
+	}
+	
 }
 	
 	

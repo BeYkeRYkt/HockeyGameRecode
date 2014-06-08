@@ -29,7 +29,6 @@ public class CountToStartRunnable extends BukkitRunnable{
 		
       if(seconds == 0){
     	  arena.startArena();
-		  this.cancel();
 	  }
       
       seconds--;

@@ -44,7 +44,10 @@ public enum Lang {
     TEAM_DOES_NOT_EXIT("team-does-not-exit", "&4Team does not exist!"),
     CREATE_ARENA_CANCELLED("create-arena-cancelled", "&aCreation of arena was cancelled."),
     PLAYER_NOT_READY("player-not-ready", "&4You're not ready. Choose your class."),
-    PLAYER_READY("player-is-ready", "&7 is Ready!");
+    PLAYER_READY("player-is-ready", "&7 is Ready!"),
+    MATCH_CONTINUES("match-continues", "&aGame continues! Puck respawned!"),
+    SCORED_GOAL("scored-goal", "&a scored goal of "), 
+    TEAM_WIN("team-win", "&a won this match!");
 
     private String path;
     private String def;

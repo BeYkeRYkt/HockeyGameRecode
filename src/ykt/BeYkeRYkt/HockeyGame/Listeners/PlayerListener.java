@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,11 +16,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.util.Vector;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
@@ -29,15 +34,13 @@ import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 
 public class PlayerListener implements Listener{
 	
-	
-	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event){
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
 			if(block.getType() == Material.GOLD_BLOCK){
-			if(HGAPI.getPlayerManager().getHockeyPlayer(player.getName()) != null){
+			if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
 			if(hp.getType() != null){
 				if(hp.getArena().isRunning()) return;
@@ -58,6 +61,65 @@ public class PlayerListener implements Listener{
 			}
 		}
 		
+		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK ){
+			if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
+				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
+			if(player.getItemInHand()!= null){
+			
+			for(Entity entity: player.getNearbyEntities(2, 2, 2)){
+			if(entity instanceof Item){
+
+				Item i = (Item) entity;
+				
+				if(i.getEntityId() == hp.getArena().getPuckEntity().getItem().getEntityId()){
+				double speedbonus = 0.3;
+				double beat = 0;
+	 		    Vector vi = player.getEyeLocation().getDirection();
+	 		    hp.getArena().getPuckEntity().setLastPlayer(hp);
+				
+				if(hp.getType().getName().equals("Winger")){
+					
+					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Winger");
+					
+					if(player.isSprinting()){
+		    		   beat = speedbonus * beat;
+					}
+		    			 
+		    		 if(player.isSneaking()){		    
+		    			 vi.multiply(0.8);
+		    		 }
+		    		 
+				}else if(hp.getType().getName().equals("Defender")){
+					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Defender");
+					
+					if(player.isSprinting()){
+		    		   beat = speedbonus * beat;
+					}
+		    			 
+		    		 if(player.isSneaking()){		    
+		    			 vi.multiply(0.8);
+		    		 }
+				}else if(hp.getType().getName().equals("Goalkeeper")){
+					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Goalkeeper");
+					
+					if(player.isSprinting()){
+		    		   beat = speedbonus * beat;
+					}
+		    			 
+		    		 if(player.isSneaking()){		    
+		    			 vi.multiply(0.8);
+		    		 }
+				}
+				
+				 vi.multiply(beat);
+	    		 
+	    		 entity.setVelocity(vi);
+			}
+				}
+			}
+			}
+		}
+		}
 	}
 	
 	
@@ -98,6 +160,27 @@ public class PlayerListener implements Listener{
 		  }
 		}
 	}
+	
+
+	@EventHandler
+	public void onPlayerPickup(PlayerPickupItemEvent event) {
+	Player player = event.getPlayer();
+	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
+		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
+		if(event.getItem().getItemStack().equals(hp.getArena().getPuckEntity().getItem().getItemStack())){
+		event.setCancelled(true);
+		}
+	}
+  }
+	    
+	
+	@EventHandler
+	public void onPlayerDrop(PlayerDropItemEvent event) {
+	Player player = event.getPlayer();
+	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
+		event.setCancelled(true);
+	}
+  }
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
