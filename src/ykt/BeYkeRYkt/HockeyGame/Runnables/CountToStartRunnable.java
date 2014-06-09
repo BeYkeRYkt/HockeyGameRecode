@@ -21,13 +21,16 @@ public class CountToStartRunnable extends BukkitRunnable{
 	@Override
 	public void run() {
 	
-		for(HockeyPlayer players : arena.getPlayers()){
-		    players.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...");
-		    HGAPI.playSound(arena.getWorld(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+		if(seconds < 6 && seconds > 0){
+		    for(HockeyPlayer players: arena.getPlayers()){
+			HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+		    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+		    }
 		}
 		
 		
       if(seconds == 0){
+    	  arena.broadcastMessage(Lang.GAME_STARTED.toString());
     	  arena.startArena();
 	  }
       

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -13,7 +14,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.FireworkEffect.Type;
 
 import ykt.BeYkeRYkt.HockeyGame.HG;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.ArenaManager;
@@ -22,6 +22,7 @@ import ykt.BeYkeRYkt.HockeyGame.API.Signs.SignManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.PlayerManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.TeamManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
+import ykt.BeYkeRYkt.HockeyGame.API.Utils.PlayerSaver;
 
 public class HGAPI{
 	
@@ -31,6 +32,7 @@ public class HGAPI{
 	private static ClassManager classes;
 	private static PlayerManager players;
 	private static TeamManager teams;
+	private static PlayerSaver saver;
 	
 	public HGAPI(HG plugin){
 		this.plugin = plugin;
@@ -43,6 +45,8 @@ public class HGAPI{
 		this.players = new PlayerManager(this);
 		this.signs = new SignManager(this);
 		this.arena = new ArenaManager(this);
+		this.saver = new PlayerSaver();
+		saver.loadAllPlayers();
 	}
 	
 	public static ArenaManager getArenaManager(){
@@ -69,30 +73,34 @@ public class HGAPI{
 		return plugin;
 	}
 	
-	
-	
-	public static void sendMessage(Player player, String message){
-		player.sendMessage(Lang.TITLE.toString() + message);
-		playSound(player.getWorld(), player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
+	public static PlayerSaver getItemSaver(){
+		return saver;
 	}
 	
-	public static void sendMessageAll(String message){
+	
+	public static void sendMessage(Player player, String message, boolean sound){
+		player.sendMessage(Lang.TITLE.toString() + message);
+		if(sound){
+		playSound(player, player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
+		}
+	}
+	
+	public static void sendMessageAll(String message, boolean sound){
 		for(Player players: Bukkit.getOnlinePlayers()){
-			sendMessage(players, message);
+			sendMessage(players, message, sound);
 		}
 	}
 	
 	/**
 	 * playSound for players
 	 * 
-	 * @param world
 	 * @param loc
 	 * @param sound
 	 * @param Volume - Default 1
 	 * @param Pitch - Default 1
 	 */
-	public static void playSound(World world, Location loc, Sound sound, int Volume, int Pitch){
-		world.playSound(loc, sound, Volume , Pitch);
+	public static void playSound(Player player, Location loc, Sound sound, int Volume, int Pitch){
+		player.playSound(loc, sound, Volume , Pitch);
 	}
 	
 	public static void playEffect(World world, Location loc, Effect effect, int data){

@@ -22,7 +22,7 @@ public class SignListener implements Listener{
 		if (e.getLine(0).equalsIgnoreCase("[HockeyGame]")) {
 			if (!player.hasPermission("hg.setup")) {
 				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
-				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString());
+				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString(), false);
 				e.setCancelled(true);
 				e.getBlock().breakNaturally();
 				return;
@@ -61,7 +61,7 @@ public class SignListener implements Listener{
 		if (sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "[" + ChatColor.WHITE + HGAPI.getPlugin().getName() + ChatColor.RED + "]")) {
 			if (!player.hasPermission("hg.setup")) {
 				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
-				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString());
+				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString(), false);
 				e.setCancelled(true);
 				return;
 			}

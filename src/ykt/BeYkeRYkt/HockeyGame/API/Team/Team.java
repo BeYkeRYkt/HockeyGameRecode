@@ -3,7 +3,6 @@ package ykt.BeYkeRYkt.HockeyGame.API.Team;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 
@@ -40,6 +39,8 @@ public class Team{
 	
 	public void MassTeleportToLocation(Location location) {
         for(HockeyPlayer players: getMembers()){
+        	location.setPitch(players.getBukkitPlayer().getLocation().getPitch());
+        	location.setYaw(players.getBukkitPlayer().getLocation().getYaw());
         	players.getBukkitPlayer().teleport(location);
         }
 	}

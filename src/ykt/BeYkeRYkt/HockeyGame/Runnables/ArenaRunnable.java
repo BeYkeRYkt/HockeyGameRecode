@@ -4,8 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Item;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
@@ -47,7 +46,9 @@ public class ArenaRunnable extends BukkitRunnable{
 			arena.broadcastMessage(ChatColor.YELLOW + puck.getLastPlayer().getName() + Lang.SCORED_GOAL.toString() + ChatColor.GOLD + arena.getFirstTeam().getName());
 			HGAPI.spawnRandomFirework(arena.getWorld(), puck.getLastPlayer().getBukkitPlayer().getLocation());
 			
-			HGAPI.playEffect(arena.getWorld(), puck.getItem().getLocation(), Effect.EXPLOSION_HUGE, 1);
+			//HGAPI.playEffect(arena.getWorld(), puck.getItem().getLocation(), Effect.EXPLOSION_HUGE, 1);
+			arena.getWorld().createExplosion(loc, 0);
+			
 			puck.getItem().getItemStack().setAmount(0);
 			puck.getItem().remove();
 			puck.clearItem();
@@ -73,7 +74,9 @@ public class ArenaRunnable extends BukkitRunnable{
 			arena.broadcastMessage(ChatColor.YELLOW + puck.getLastPlayer().getName() + Lang.SCORED_GOAL.toString() + ChatColor.GOLD + arena.getSecondTeam().getName());
 			HGAPI.spawnRandomFirework(arena.getWorld(), puck.getLastPlayer().getBukkitPlayer().getLocation());
 					
-			HGAPI.playEffect(arena.getWorld(), puck.getItem().getLocation(), Effect.EXPLOSION_HUGE, 1);
+			//HGAPI.playEffect(arena.getWorld(), puck.getItem().getLocation(), Effect.EXPLOSION_HUGE, 1);
+			arena.getWorld().createExplosion(loc, 0);
+			
 			puck.getItem().getItemStack().setAmount(0);
 			puck.getItem().remove();
 			puck.clearItem();
@@ -86,33 +89,42 @@ public class ArenaRunnable extends BukkitRunnable{
 			}
 		}
 		
-		if(seconds == lastgoalsec){
+		if(seconds == lastgoalsec && seconds > 5){
 			arena.respawnPuck();
+		}
+		
+		
+		if(seconds < 6 && seconds > 0){
+		    for(HockeyPlayer players: arena.getPlayers()){
+			HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+		    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+		    }
 		}
 		
 		if(seconds == 0){
 			if(arena.getFirstTeamScores() > arena.getSecondTeamScores()){
-				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getFirstTeam().getName() + Lang.TEAM_WIN.toString());
-				HGAPI.sendMessageAll(""+ ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores());
+				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getFirstTeam().getName() + Lang.TEAM_WIN.toString(), true);
+				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
 				
 				for(HockeyPlayer player: arena.getFirstTeam().getMembers()){
 					HGAPI.spawnRandomFirework(arena.getWorld(), player.getBukkitPlayer().getLocation());
 				}
 				
 			}else if(arena.getFirstTeamScores() < arena.getSecondTeamScores()){
-				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getSecondTeam().getName() + Lang.TEAM_WIN.toString());
-				HGAPI.sendMessageAll(""+ ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores());
+				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getSecondTeam().getName() + Lang.TEAM_WIN.toString(), true);
+				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
 				
 				for(HockeyPlayer player: arena.getSecondTeam().getMembers()){
 					HGAPI.spawnRandomFirework(arena.getWorld(), player.getBukkitPlayer().getLocation());
 				}
+			}else if(arena.getFirstTeamScores() == arena.getSecondTeamScores()){
+				HGAPI.sendMessageAll(Lang.TIE.toString(), true);
+				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
 			}
 			
 			arena.stopArena();
 		}
 		
-		//Debug
-		arena.broadcastMessage(""+ ChatColor.RED + seconds);
 		seconds--;
 	}
 	

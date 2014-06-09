@@ -12,3 +12,10 @@ commands:
     description: Arena commands
     usage: /<command> [args]
     aliases: [harena]
+permissions:
+  hg.setup:
+    default: false
+  hg.admin:
+    default: false
+  hg.playing:
+    default: true

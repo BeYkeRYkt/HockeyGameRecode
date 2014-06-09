@@ -37,7 +37,7 @@ public class HArenaCommands implements CommandExecutor{
 		if(args.length == 0){
 			if(!getCreators().contains(player)){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.START_CREATE_ARENA.toString());
-			HGAPI.sendMessage(player, Lang.START_CREATE_ARENA.toString());
+			HGAPI.sendMessage(player, Lang.START_CREATE_ARENA.toString(), true);
 			getCreators().add(player);			
 			}
 		}else if(args.length == 1){// others 
@@ -47,11 +47,11 @@ public class HArenaCommands implements CommandExecutor{
 					if(arena.getFirstTeamLobbyLocation() == null){
 					arena.setFirstTeamLobbyLocation(player.getLocation());
 					//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_SET_LOBBY.toString());
-					HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_LOBBY.toString());
+					HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_LOBBY.toString(), true);
 					}else if(arena.getFirstTeamLobbyLocation() != null & arena.getSecondTeamLobbyLocation() == null){
 					arena.setSecondTeamLobbyLocation(player.getLocation());
 					//player.sendMessage(Lang.TITLE.toString() + Lang.FIRST_TEAM_SET_SPAWN.toString());
-					HGAPI.sendMessage(player, Lang.FIRST_TEAM_SET_SPAWN.toString());
+					HGAPI.sendMessage(player, Lang.FIRST_TEAM_SET_SPAWN.toString(), true);
 					}
 				}
 			}else if(args[0].equalsIgnoreCase("setspawn")){
@@ -60,11 +60,11 @@ public class HArenaCommands implements CommandExecutor{
 					if(arena.getFirstTeamSpawnLocation() == null){
 						arena.setFirstTeamSpawnLocation(player.getLocation());
 						//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_SET_SPAWN.toString());
-						HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_SPAWN.toString());
+						HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_SPAWN.toString(), true);
 						}else if(arena.getFirstTeamSpawnLocation() != null & arena.getSecondTeamSpawnLocation() == null){
 						arena.setSecondTeamSpawnLocation(player.getLocation());
 						//player.sendMessage(Lang.TITLE.toString() + Lang.PUCK_SET_SPAWN.toString());
-						HGAPI.sendMessage(player, Lang.PUCK_SET_SPAWN.toString());
+						HGAPI.sendMessage(player, Lang.PUCK_SET_SPAWN.toString(), true);
 					}
 				}
 			}else if(args[0].equalsIgnoreCase("setpuckspawn")){
@@ -72,21 +72,21 @@ public class HArenaCommands implements CommandExecutor{
 					Arena arena = getArenas().get(player.getName());
 					arena.setPuckLocation(player.getLocation());
 					//player.sendMessage(Lang.TITLE.toString() + Lang.SET_GATES.toString());
-					HGAPI.sendMessage(player, Lang.SET_GATES.toString());
+					HGAPI.sendMessage(player, Lang.SET_GATES.toString(), true);
 				}
 			}else if(args[0].equalsIgnoreCase("setfirstgate")){
 				if(getCreators().contains(player) && getArenas().containsKey(player.getName())){
 					Arena arena = getArenas().get(player.getName());
 					arena.addFirstTeamGate(player.getLocation());
 					//player.sendMessage(Lang.TITLE.toString() + Lang.GATE_STORED.toString());
-					HGAPI.sendMessage(player, Lang.GATE_STORED.toString());
+					HGAPI.sendMessage(player, Lang.GATE_STORED.toString(), true);
 				}
 			}else if(args[0].equalsIgnoreCase("setsecondgate")){
 				if(getCreators().contains(player) && getArenas().containsKey(player.getName())){
 					Arena arena = getArenas().get(player.getName());
 					arena.addSecondTeamGate(player.getLocation());
 					//player.sendMessage(Lang.TITLE.toString() + Lang.GATE_STORED.toString());
-					HGAPI.sendMessage(player, Lang.GATE_STORED.toString());
+					HGAPI.sendMessage(player, Lang.GATE_STORED.toString(), true);
 				}
 			}else if(args[0].equalsIgnoreCase("save")){
 				if(getCreators().contains(player) && getArenas().containsKey(player.getName())){
@@ -97,7 +97,7 @@ public class HArenaCommands implements CommandExecutor{
 				if(getCreators().contains(player) && getArenas().containsKey(player.getName())){
 					this.getArenas().remove(player.getName());
 					this.getCreators().remove(player);
-					HGAPI.sendMessage(player, Lang.CREATE_ARENA_CANCELLED.toString());
+					HGAPI.sendMessage(player, Lang.CREATE_ARENA_CANCELLED.toString(), true);
 				}
 			}
 		}
@@ -111,47 +111,37 @@ public class HArenaCommands implements CommandExecutor{
 	private void saveArena(Arena arena , Player player) {
 		if(arena.getSecondTeamGates().isEmpty()){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_EMPTY_GATES.toString());
-			HGAPI.sendMessage(player, Lang.SECOND_TEAM_EMPTY_GATES.toString());
+			HGAPI.sendMessage(player, Lang.SECOND_TEAM_EMPTY_GATES.toString(), true);
 			return;
 		}
 		if(arena.getFirstTeamGates().isEmpty()){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.FIRST_TEAM_EMPTY_GATES.toString());
-			HGAPI.sendMessage(player, Lang.FIRST_TEAM_EMPTY_GATES.toString());
+			HGAPI.sendMessage(player, Lang.FIRST_TEAM_EMPTY_GATES.toString(), true);
 			return;
 		}	
 		if(arena.getFirstTeamLobbyLocation() == null){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_LOBBY_NULL.toString());
-			HGAPI.sendMessage(player, Lang.SECOND_TEAM_LOBBY_NULL.toString());
+			HGAPI.sendMessage(player, Lang.SECOND_TEAM_LOBBY_NULL.toString(), true);
 			return;
 		}
 		if(arena.getSecondTeamLobbyLocation() == null){
 			//player.sendMessage(Lang.TITLE.toString()+ Lang.FIRST_TEAM_LOBBY_NULL.toString());
-			HGAPI.sendMessage(player, Lang.FIRST_TEAM_LOBBY_NULL.toString());
+			HGAPI.sendMessage(player, Lang.FIRST_TEAM_LOBBY_NULL.toString(), true);
 			return;
 		}
 		if(arena.getFirstTeamSpawnLocation() == null){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.FIRST_TEAM_SPAWN_NULL.toString());
-			HGAPI.sendMessage(player, Lang.FIRST_TEAM_SPAWN_NULL.toString());
+			HGAPI.sendMessage(player, Lang.FIRST_TEAM_SPAWN_NULL.toString(), true);
 			return;
 		}
 		if(arena.getSecondTeamSpawnLocation() == null){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_SPAWN_NULL.toString());
-			HGAPI.sendMessage(player, Lang.SECOND_TEAM_SPAWN_NULL.toString());
+			HGAPI.sendMessage(player, Lang.SECOND_TEAM_SPAWN_NULL.toString(), true);
 			return;
 		}		
 		if(arena.getPuckLocation() == null){
 			//player.sendMessage(Lang.TITLE.toString() + Lang.PUCK_SPAWN_NULL.toString());
-			HGAPI.sendMessage(player, Lang.PUCK_SPAWN_NULL.toString());
-			return;
-		}
-		if(arena.getFirstTeam() == null){
-			//player.sendMessage(Lang.TITLE.toString() + Lang.FIRST_TEAM_NULL.toString());
-			HGAPI.sendMessage(player, Lang.FIRST_TEAM_NULL.toString());
-			return;
-		}
-		if(arena.getSecondTeam() == null){
-			//player.sendMessage(Lang.TITLE.toString() + Lang.SECOND_TEAM_NULL.toString());
-			HGAPI.sendMessage(player, Lang.SECOND_TEAM_NULL.toString());
+			HGAPI.sendMessage(player, Lang.PUCK_SPAWN_NULL.toString(), true);
 			return;
 		}
 		
@@ -162,6 +152,6 @@ public class HArenaCommands implements CommandExecutor{
 		this.getArenas().remove(player.getName());
 		this.getCreators().remove(player);
 		//player.sendMessage(Lang.TITLE.toString() + Lang.ARENA_SAVED.toString());
-		HGAPI.sendMessage(player, Lang.ARENA_SAVED.toString());
+		HGAPI.sendMessage(player, Lang.ARENA_SAVED.toString(), true);
 	}
 }

@@ -1,11 +1,13 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Arena;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStartEvent;
+import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStopEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerJoinArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
@@ -25,10 +28,10 @@ import ykt.BeYkeRYkt.HockeyGame.Runnables.CountToStartRunnable;
 
 public class Arena{
 	
-	private List<Location> red_gates = new ArrayList<Location>();
-	private List<Location> blue_gates = new ArrayList<Location>();
+	private ArrayList<Location> red_gates = new ArrayList<Location>();
+	private ArrayList<Location> blue_gates = new ArrayList<Location>();
 	private String name;
-	private List<HockeyPlayer> players = new ArrayList<HockeyPlayer>();
+	private ArrayList<HockeyPlayer> players = new ArrayList<HockeyPlayer>();
 	private int max = 12;
 	private Team team1;
 	private Team team2;
@@ -66,7 +69,7 @@ public class Arena{
 		this.name = arenaName;
 	}
 	
-	public List<HockeyPlayer> getPlayers(){
+	public ArrayList<HockeyPlayer> getPlayers(){
 		return players;
 	}
 	
@@ -168,11 +171,11 @@ public class Arena{
 	
 	
 	//GATES
-	public List<Location> getFirstTeamGates(){
+	public ArrayList<Location> getFirstTeamGates(){
 		return red_gates;
 	}
 	
-	public List<Location> getSecondTeamGates(){
+	public ArrayList<Location> getSecondTeamGates(){
 		return blue_gates;
 	}
 	
@@ -221,22 +224,38 @@ public class Arena{
 		Bukkit.getPluginManager().callEvent(event);
 		
 		if(!event.isCancelled()){
-		//Save.inv
+		HGAPI.getItemSaver().savePlayer(player.getBukkitPlayer());
 		player.getBukkitPlayer().getInventory().clear();
+		player.getBukkitPlayer().getInventory().setArmorContents(null);
 		player.getBukkitPlayer().updateInventory();
 		player.setArena(this);
 		player.setTeam(team);
 				
 		if(this.getFirstTeam().getName().equals(team.getName())){
+			
+		float pitch = player.getBukkitPlayer().getLocation().getPitch();
+		float yaw = player.getBukkitPlayer().getLocation().getYaw();
+		
 		player.getBukkitPlayer().teleport(getFirstTeamLobbyLocation());
+		
 		getFirstTeam().getMembers().add(player);
 		}else if(this.getSecondTeam().getName().equals(team.getName())){
+			float pitch = player.getBukkitPlayer().getLocation().getPitch();
+			float yaw = player.getBukkitPlayer().getLocation().getYaw();
+			
 		player.getBukkitPlayer().teleport(getSecondTeamLobbyLocation());
 		getSecondTeam().getMembers().add(player);
 		}
 		
+		player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+		player.getBukkitPlayer().setFoodLevel(20);
+		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+		
+		
 		getPlayers().add(player);
 		HGAPI.getPlayerManager().addPlayer(player.getName(), player);
+		
+		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_JOIN_ARENA.toString() +ChatColor.GREEN + getName(), true);
 	}
 	}
 	
@@ -248,9 +267,11 @@ public class Arena{
 		if(!event.isCancelled()){
 		Team team = player.getTeam();
 		player.getBukkitPlayer().getInventory().clear();
+		player.getBukkitPlayer().getInventory().setArmorContents(null);
 		player.getBukkitPlayer().updateInventory();
-		//Save.load
+		HGAPI.getItemSaver().loadPlayer(player.getBukkitPlayer());
 		
+		if(player.getType() != null){
 		if(team.getWingers().contains(player)){
 			team.removeWinger(player);
 		}else if(team.getDefends().contains(player)){
@@ -258,10 +279,13 @@ public class Arena{
 		}else if(team.getGoalKeeper().equals(player)){
 			team.removeGoalkeeper();
 		}
+		}
+		
 		getPlayers().remove(player);
+		team.getMembers().remove(player);
 		HGAPI.getPlayerManager().removePlayer(player.getName());
 		
-		//player.getBukkitPlayer().teleport(home);
+		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName(), true);
 		}
 	}
 	
@@ -280,7 +304,7 @@ public class Arena{
 		getCountToStartRunnable().cancel();
 		
 		if(!event.isCancelled()){
-
+			
 			if(getPuck() == null){
 			setupPuck();
 			}
@@ -298,9 +322,15 @@ public class Arena{
 			setPuckEntity(puck);
 			startMainRunnable(puck);
 			
+			if(getPlayers().size() < 2){
+				stopArena();
+				return;
+			}
+			
 			if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
 				startPlayMusic();
 			}
+			
 		}
 	}
 
@@ -344,7 +374,7 @@ public class Arena{
 	
 	public void broadcastMessage(String message){
 		for(HockeyPlayer players: getPlayers()){
-			HGAPI.sendMessage(players.getBukkitPlayer(), message);
+			HGAPI.sendMessage(players.getBukkitPlayer(), message, true);
 		}
 	}
 
@@ -380,15 +410,17 @@ public class Arena{
 				
 		int seconds = HGAPI.getPlugin().getConfig().getInt("Game.MatchTimer");
 		this.mainrun = new ArenaRunnable(this, puck, seconds);
-		getMainRunnable().runTaskTimer(HGAPI.getPlugin(), 0, 20);
 		
+		getMainRunnable().runTaskTimer(HGAPI.getPlugin(), 0, 20);
 	}
 	
 	public void respawnPuck(){
+
 		Item item = getWorld().dropItemNaturally(getPuckLocation(), getPuck());
 		Puck puck = new Puck(this, item);
 		setPuckEntity(puck);
 		getMainRunnable().setPuck(puck);
+		
 		
 		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.ENDER_SIGNAL, 1);
 		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.MOBSPAWNER_FLAMES, 1);
@@ -397,23 +429,41 @@ public class Arena{
 		broadcastMessage(Lang.MATCH_CONTINUES.toString());
 	}
 
-	public void stopArena() {
-	   for(HockeyPlayer player: getPlayers()){
-		   leavePlayer(player);
-		   setRunning(false);
+	public void stopArena() {   	
+		MatchStopEvent event = new MatchStopEvent(getPlayers(), this);
+	   Bukkit.getPluginManager().callEvent(event);
+		
+	   if(!event.isCancelled()){
+	   setRunning(false);
+	   
+	   if(getMainRunnable() != null){
+	   getMainRunnable().cancel();
 	   }
 	   
-		getPuckEntity().getItem().remove();
-		getPuckEntity().clearItem();
-		getPuckEntity().clearPlayer();
+	   //Fixing ConcurrentModificationException...
+	   for(Iterator<HockeyPlayer> it = getPlayers().iterator(); it.hasNext(); ){
+		   HockeyPlayer player = it.next();
+		   it.remove();
+		   leavePlayer(player);
+	   }
 	   
-	   getMainRunnable().cancel();
+	   if(getPuckEntity() != null){
+		   
+	   if(getPuckEntity().getItem() != null && !getPuckEntity().getItem().isDead()){
+		getPuckEntity().getItem().remove();
+	   }
+		getPuckEntity().clearItem();
+		getPuckEntity().clearPlayer();	
+		
+	   }
+		
 	   red_score = 0;
 	   blue_scores = 0;
 	   countrunnable = null;
 	   mainrun = null;
 	   puckentity = null;
-		
+	   }
+	   
 	}
 	
 }

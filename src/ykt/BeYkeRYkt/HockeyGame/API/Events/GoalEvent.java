@@ -1,6 +1,5 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Events;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

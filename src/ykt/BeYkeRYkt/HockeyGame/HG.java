@@ -8,15 +8,18 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 import ykt.BeYkeRYkt.HockeyGame.Commands.HArenaCommands;
+import ykt.BeYkeRYkt.HockeyGame.Commands.HockeyCommands;
 import ykt.BeYkeRYkt.HockeyGame.Listeners.GUIListener;
 import ykt.BeYkeRYkt.HockeyGame.Listeners.PlayerListener;
 import ykt.BeYkeRYkt.HockeyGame.Listeners.SignListener;
@@ -28,12 +31,7 @@ public class HG extends JavaPlugin{
 	private static File LANG_FILE;
 	private String lang;
 	private HArenaCommands harena;
-	
-	@Override
-	public void onLoad(){
-		this.api = new HGAPI(this);
-		this.harena = new HArenaCommands();
-	}
+	private HockeyCommands hockey;
 	
 	@Override
 	public void onEnable(){
@@ -48,14 +46,13 @@ public class HG extends JavaPlugin{
 								+ " Configuration" + "\nHave fun :3"
 								+ "\nby BeYkeRYkt");
 				fc.addDefault("Enable-updater", true);
-				fc.addDefault("Debug", false);
 				fc.addDefault("Lang", "English");
 				fc.addDefault("Game.MatchTimer", 200);
-				fc.addDefault("Game.puck.material", "RECORD_7");
 				fc.addDefault("Game.MusicMatch", true);
-				fc.addDefault("Game.PowerBeat.Winger", 0.6);
-				fc.addDefault("Game.PowerBeat.Defender", 0.5);
-				fc.addDefault("Game.PowerBeat.Goalkeeper", 0.3);
+				fc.addDefault("Game.puck.material", "RECORD_7");
+				fc.addDefault("Game.PowerBeat.Winger", 0.5);
+				fc.addDefault("Game.PowerBeat.Defender", 0.3);
+				fc.addDefault("Game.PowerBeat.Goalkeeper", 0.2);
 				fc.options().copyDefaults(true);
 				saveConfig();
 				fc.options().copyDefaults(false);
@@ -64,6 +61,10 @@ public class HG extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
+		this.api = new HGAPI(this);
+		this.harena = new HArenaCommands();
+		this.hockey = new HockeyCommands();
+		
 		this.lang = getConfig().getString("Lang");
 		
 		loadLang();
@@ -71,7 +72,9 @@ public class HG extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
 		getCommand("harena").setExecutor(harena);
-		setupPermissions();
+		getCommand("hockey").setExecutor(hockey);
+		
+		//setupPermissions(); - Removed
 		
 		File teams = new File(api.getPlugin().getDataFolder(), "/teams/");
 		if(teams.exists()){
@@ -86,17 +89,57 @@ public class HG extends JavaPlugin{
 		}else{
 			arenas.mkdirs();
 		}
+		
+		//Update
+		if(this.getConfig().getBoolean("Enable-updater")){
+			this.getLogger().info("Enabling update system...");
+			new UpdateContainer(this.getFile());
+		}
+				
+		//mcstats
+		try {
+		   Metrics metrics = new Metrics(this);
+		   metrics.start();
+		} catch (IOException e) {
+		   // Failed to submit the stats :-(
+		}
 	}
 	
 	private void setupPermissions() {
 		Bukkit.getPluginManager().addPermission(new Permission("hg.setup", PermissionDefault.FALSE));
+		Bukkit.getPluginManager().addPermission(new Permission("hg.admin", PermissionDefault.FALSE));
+		Bukkit.getPluginManager().addPermission(new Permission("hg.playing", PermissionDefault.FALSE));
 	}
 
 	@Override
 	public void onDisable(){
 		for(Arena arena: HGAPI.getArenaManager().getArenas().values()){
 		HGAPI.getArenaManager().save(arena);
+		
+		if(arena.isRunning()){
+		arena.stopArena();
 		}
+		
+		}
+		
+		HandlerList.unregisterAll(this);
+		this.api = null;
+		this.harena = null;
+		this.hockey = null;
+		this.lang = null;
+		this.LANG = null;
+		this.LANG_FILE = null;
+	}
+	
+	public void reloadLang(){	
+		this.lang = getConfig().getString("Lang");
+		loadLang();
+	}
+	
+	
+	public void reloadPlugin(){
+		onDisable();
+		onEnable();
 	}
 	
 	public HArenaCommands getHArenaCommand(){

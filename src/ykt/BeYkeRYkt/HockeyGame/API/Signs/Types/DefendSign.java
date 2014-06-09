@@ -1,6 +1,7 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Signs.Types;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -29,11 +30,11 @@ public class DefendSign implements SignType{
 	    if(type != null){
 			event.setLine(0, ChatColor.RED + "[" + HGAPI.getPlugin().getName() + "]");
 			//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.SUCCESS_SIGN_CREATE.toString());
-			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_CREATE.toString());
+			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_CREATE.toString(), false);
 			event.getBlock().getState().update(true);
 	    }else{
 	    	//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.CLASS_DOES_NOT_EXIT.toString());
-	    	HGAPI.sendMessage(event.getPlayer(), Lang.CLASS_DOES_NOT_EXIT.toString());
+	    	HGAPI.sendMessage(event.getPlayer(), Lang.CLASS_DOES_NOT_EXIT.toString(), false);
 			event.setCancelled(true);
 			event.getBlock().breakNaturally();
 	    }
@@ -49,7 +50,8 @@ public class DefendSign implements SignType{
 	    		if(player.getTeam().getDefends().size() < 2){
 	    		if(player.getType() != null && !player.getType().getName().equals(type.getName())){
 		    		   //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CHANGE_CLASS.toString());
-		    		   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString());
+		    		   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString(), false);
+		    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
 	    		   player.getBukkitPlayer().getInventory().clear();
 	    		   player.getBukkitPlayer().updateInventory();
 
@@ -64,7 +66,8 @@ public class DefendSign implements SignType{
 	    		   player.getTeam().addDefend(player);
 	    		}else if(player.getType() == null){
 		    		   //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CHANGE_CLASS.toString());
-		    		   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString());
+		    		   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString(), false);
+		    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
 		    		   player.getBukkitPlayer().getInventory().clear();
 		    		   player.getBukkitPlayer().updateInventory();
 		    		   player.setType(type);
@@ -73,20 +76,19 @@ public class DefendSign implements SignType{
 	    		}
 		    	}else{
 		    		 //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CLASS_FULL.toString());
-		    		 HGAPI.sendMessage(player.getBukkitPlayer(),  Lang.CLASS_FULL.toString());
+		    		 HGAPI.sendMessage(player.getBukkitPlayer(),  Lang.CLASS_FULL.toString(), false);
 		    	}
 		    	}
 		    }else{
 		    	//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.CLASS_DOES_NOT_EXIT.toString());
-		    	HGAPI.sendMessage(event.getPlayer(), Lang.CLASS_DOES_NOT_EXIT.toString());
-				event.setCancelled(true);
+		    	HGAPI.sendMessage(event.getPlayer(), Lang.CLASS_DOES_NOT_EXIT.toString(), false);
 		    }
 		}
 
 		@Override
 		public void handleDestroy(BlockBreakEvent event) {
 	    	//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.SUCCESS_SIGN_REMOVE.toString());
-			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_REMOVE.toString());
+			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_REMOVE.toString(), false);
 		}
 	
 }
