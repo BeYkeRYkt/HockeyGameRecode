@@ -1,0 +1,14 @@
+# HockeyGame v2.1 Configuration
+# Have fun :3
+# by BeYkeRYkt
+Enable-updater: true
+Lang: English
+Game:
+  MatchTimer: 200
+  MusicMatch: true
+  puck:
+    material: RECORD_7
+  PowerBeat:
+    Winger: 0.5
+    Defender: 0.3
+    Goalkeeper: 0.2
