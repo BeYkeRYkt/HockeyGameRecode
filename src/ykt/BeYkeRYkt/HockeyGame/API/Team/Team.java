@@ -1,10 +1,13 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Team;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+
+import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
 public class Team{
 	
@@ -23,6 +26,11 @@ public class Team{
     //SYSTEM
 	public int getMaxMembers(){
 		return 6;
+	}
+	
+	public File getFile(){
+		File file = new File(HGAPI.getPlugin().getDataFolder() + "/teams/", name + ".yml");
+		return file;
 	}
 	
 	public String getName() {

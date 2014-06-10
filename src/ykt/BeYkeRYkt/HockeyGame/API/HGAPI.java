@@ -1,5 +1,7 @@
 package ykt.BeYkeRYkt.HockeyGame.API;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.HG;
+import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.ArenaManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Classes.ClassManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Signs.SignManager;
@@ -33,6 +36,7 @@ public class HGAPI{
 	private static PlayerManager players;
 	private static TeamManager teams;
 	private static PlayerSaver saver;
+	private static List<Color> colors;
 	
 	public HGAPI(HG plugin){
 		this.plugin = plugin;
@@ -46,7 +50,26 @@ public class HGAPI{
 		this.signs = new SignManager(this);
 		this.arena = new ArenaManager(this);
 		this.saver = new PlayerSaver();
+		this.colors = new ArrayList<Color>();
 		saver.loadAllPlayers();
+		
+		colors.add(Color.AQUA);
+		colors.add(Color.BLACK);
+		colors.add(Color.BLUE);
+		colors.add(Color.FUCHSIA);
+		colors.add(Color.GRAY);
+		colors.add(Color.GREEN);
+		colors.add(Color.LIME);
+		colors.add(Color.MAROON);
+		colors.add(Color.NAVY);
+		colors.add(Color.OLIVE);
+		colors.add(Color.ORANGE);
+		colors.add(Color.PURPLE);
+		colors.add(Color.RED);
+		colors.add(Color.SILVER);
+		colors.add(Color.TEAL);
+		colors.add(Color.WHITE);
+		colors.add(Color.YELLOW);
 	}
 	
 	public static ArenaManager getArenaManager(){
@@ -77,6 +100,9 @@ public class HGAPI{
 		return saver;
 	}
 	
+	public static List<Color> getColors(){
+		return colors;
+	}
 	
 	public static void sendMessage(Player player, String message, boolean sound){
 		player.sendMessage(Lang.TITLE.toString() + message);
@@ -151,4 +177,51 @@ public class HGAPI{
         fw.setFireworkMeta(fwm);
 	}
 	
+	public static void checkAndSave(Player player, Arena arena, Location loc){
+		if(arena == null) return;
+		if(arena.getFirstTeamLobbyLocation() == null){
+			arena.setFirstTeamLobbyLocation(loc);
+			HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_LOBBY.toString(), true);
+			return;
+		}
+		if(arena.getSecondTeamLobbyLocation() == null){
+			arena.setSecondTeamLobbyLocation(loc);
+			HGAPI.sendMessage(player, Lang.FIRST_TEAM_SET_SPAWN.toString(), true);
+			return;
+		}
+		if(arena.getFirstTeamSpawnLocation() == null){
+			arena.setFirstTeamSpawnLocation(loc);
+			HGAPI.sendMessage(player, Lang.SECOND_TEAM_SET_SPAWN.toString(), true);
+			return;
+		}
+		if(arena.getSecondTeamSpawnLocation() == null){
+			arena.setSecondTeamSpawnLocation(loc);
+			HGAPI.sendMessage(player, Lang.PUCK_SET_SPAWN.toString(), true);
+			return;
+		}
+		if(arena.getPuckLocation() == null){
+			arena.setPuckLocation(loc);
+			HGAPI.sendMessage(player, Lang.SET_FIRST_GATES.toString() + Lang.ICON_NEXT_STAGE, true);
+			return;
+		}
+		
+		if(!arena.isFirstGatesFulled()){
+			arena.addFirstTeamGate(loc);
+			HGAPI.sendMessage(player, Lang.GATE_STORED.toString(), true);
+			return;
+		}
+		
+		if(!arena.isSecondGatesFulled()){
+			arena.addSecondTeamGate(loc);
+			HGAPI.sendMessage(player, Lang.GATE_STORED.toString(), true);
+			return;
+		}
+
+        HGAPI.getArenaManager().save(arena);
+		
+		HGAPI.getArenaManager().addArena(arena);
+		HGAPI.getPlugin().getDevArenas().remove(player.getName());
+		HGAPI.getPlugin().getArenaCreators().remove(player);
+		HGAPI.sendMessage(player, Lang.ARENA_SAVED.toString(), true);
+	}
 }

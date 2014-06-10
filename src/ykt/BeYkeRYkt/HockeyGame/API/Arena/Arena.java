@@ -1,5 +1,6 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Arena;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -48,6 +49,8 @@ public class Arena{
 	private CountToStartRunnable countrunnable;
 	private ArenaRunnable mainrun;
 	private Puck puckentity;
+	private boolean firstgatefull = false;
+	private boolean secondgatefull = false;
 	
 	
 	public Arena(String arenaName){
@@ -59,8 +62,28 @@ public class Arena{
 		this.world = world;
 	}
 	
+	public boolean isFirstGatesFulled(){
+		return firstgatefull;
+	}
+	
+	public boolean isSecondGatesFulled(){
+		return secondgatefull;
+	}
+	
+	public void setFirstGatesFulled(boolean flag){
+		this.firstgatefull = flag;
+	}
+	
+	public void setSecondGatesFulled(boolean flag){
+		this.secondgatefull = flag;
+	}
 	
 	//SYSTEM
+	public File getFile(){
+		File file = new File(HGAPI.getPlugin().getDataFolder() + "/arenas/", name + ".yml");
+		return file;
+	}
+	
 	public String getName(){
 		return name;
 	}
@@ -286,6 +309,19 @@ public class Arena{
 		HGAPI.getPlayerManager().removePlayer(player.getName());
 		
 		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName(), true);
+			
+		if(isRunning()){
+		if(getPlayers().size() < 2){
+			stopArena();
+		}
+		}else if(!isRunning()){
+		if(getPlayers().size() < 2){
+			if(getCountToStartRunnable() != null){
+			getCountToStartRunnable().cancel();
+			}
+		}
+		}
+		
 		}
 	}
 	

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -66,8 +65,10 @@ public class PlayerSaver{
 
 		   String files ;
 		   File folder = new File ( path ) ;
+		   folder.mkdirs();
 		   File [ ] listOfFiles = folder. listFiles ( ) ; 
-
+           
+		   
 		   for ( int i = 0 ; i < listOfFiles. length ; i ++ ) 
 		   {
 

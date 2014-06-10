@@ -280,4 +280,9 @@ public class ArenaManager{
 		      e.printStackTrace();
 		    }
 	}
+	
+	public void deleteArena(Arena arena){	
+		removeArena(arena);
+		arena.getFile().delete();
+	}
 }

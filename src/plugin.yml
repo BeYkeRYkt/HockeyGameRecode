@@ -7,11 +7,6 @@ commands:
   hockey:
     description: Main commands
     usage: /<command> [args]
-    aliases: [hockey]
-  harena:
-    description: Arena commands
-    usage: /<command> [args]
-    aliases: [harena]
 permissions:
   hg.setup:
     default: false

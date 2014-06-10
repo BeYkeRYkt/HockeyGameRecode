@@ -1,6 +1,5 @@
 package ykt.BeYkeRYkt.HockeyGame.Commands;
 
-import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,6 +161,116 @@ public class Icons{
 		ItemStack item = new ItemStack(Material.SLIME_BALL);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Lang.ICON_RELOAD.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getArenaManager() {
+		ItemStack item = new ItemStack(Material.WORKBENCH);
+		ItemMeta meta = item.getItemMeta();
+
+		List<String> lore = new ArrayList<String>();
+		
+		lore.add(0, Lang.AVAILABLE_ARENAS.toString());
+		for(String arena: HGAPI.getArenaManager().getArenas().keySet()){	
+		List<String> arenas = new ArrayList<String>();	
+		
+        arenas.add(arena);
+        
+        lore.add(arenas.indexOf(arena) + 1, ChatColor.GOLD + arena);
+		}
+		
+		meta.setLore(lore);
+		meta.setDisplayName(Lang.ARENA_MANAGER.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getTeamManager() {
+		ItemStack item = new ItemStack(Material.BED);
+		ItemMeta meta = item.getItemMeta();
+
+		List<String> lore = new ArrayList<String>();
+		
+		lore.add(0, Lang.TEAMS.toString());
+		for(String arena: HGAPI.getTeamManager().getTeams().keySet()){	
+		List<String> arenas = new ArrayList<String>();	
+		
+        arenas.add(arena);
+        
+        lore.add(arenas.indexOf(arena) + 1, ChatColor.GOLD + arena);
+		}
+		
+		meta.setLore(lore);
+		meta.setDisplayName(Lang.TEAM_MANAGER.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getCreateArena() {
+		ItemStack item = new ItemStack(Material.WATER_BUCKET);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.ICON_CREATE_ARENA.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getDeleteArena() {
+		ItemStack item = new ItemStack(Material.LAVA_BUCKET);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.ICON_DELETE_ARENA.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getStopArena() {
+		ItemStack item = new ItemStack(Material.WEB);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.ICON_STOP_ARENA.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getCreateTeam() {
+		ItemStack item = new ItemStack(Material.PAPER);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.ICON_CREATE_TEAM.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getDeleteTeam() {
+		ItemStack item = new ItemStack(Material.PAPER);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.ICON_DELETE_TEAM.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getTeam(String name) {
+		ItemStack item = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+		
+		meta.setColor(HGAPI.getTeamManager().getTeam(name).getColor());
+		meta.setDisplayName(ChatColor.YELLOW + name);
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getNextStage() {
+		ItemStack item = new ItemStack(Material.DIAMOND_BLOCK);
+		ItemMeta meta = item.getItemMeta();
+		
+		meta.setDisplayName(Lang.ICON_NEXT_STAGE.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static ItemStack getCancel() {
+		ItemStack item = new ItemStack(Material.BLAZE_POWDER);
+		ItemMeta meta = item.getItemMeta();
+		
+		meta.setDisplayName(Lang.ICON_CANCEL.toString());
 		item.setItemMeta(meta);
 		return item;
 	}

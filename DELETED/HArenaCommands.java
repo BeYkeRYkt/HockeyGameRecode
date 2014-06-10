@@ -100,7 +100,11 @@ public class HArenaCommands implements CommandExecutor{
 					HGAPI.sendMessage(player, Lang.CREATE_ARENA_CANCELLED.toString(), true);
 				}
 			}
+		}else if(args.length >= 2){
+			//Nope...
 		}
+		}else{
+	    	HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString(), true);
 		}
 	    }else if(sender instanceof ConsoleCommandSender){
 	    	

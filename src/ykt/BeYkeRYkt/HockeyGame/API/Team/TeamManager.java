@@ -34,6 +34,11 @@ public class TeamManager{
 		return getTeams().get(name);
 	}
 	
+	public void deleteTeam(Team team){	
+		removeTeam(team);
+		team.getFile().delete();
+	}
+	
 	public void loadAllTeams(){
 		   String path = "plugins/HockeyGame/teams" ; 
 
@@ -72,47 +77,11 @@ public class TeamManager{
 
 	      String txt = "";
 	      
-	      String color = snr.nextLine().trim();
-	      HGAPI.getPlugin().getLogger().info("Team Color: " + color);
-	      Color Color = null;
-	      
-	      if(color.equalsIgnoreCase("black")){
-	    	  Color = Color.BLACK;
-	      }else if(color.equalsIgnoreCase("aqua")){
-	    	  Color = Color.AQUA;
-	      }else if(color.equalsIgnoreCase("blue")){
-	    	  Color = Color.BLUE;
-	      }else if(color.equalsIgnoreCase("fuchsia")){
-	    	  Color = Color.FUCHSIA;
-	      }else if(color.equalsIgnoreCase("gray")){
-	      	  Color = Color.GRAY;
-	      }else if(color.equalsIgnoreCase("green")){
-	    	  Color = Color.GREEN;
-	      }else if(color.equalsIgnoreCase("lime")){
-	    	  Color = Color.LIME;
-	      }else if(color.equalsIgnoreCase("maroon")){
-	    	  Color = Color.MAROON;
-	      }else if(color.equalsIgnoreCase("navy")){
-	    	  Color = Color.NAVY;
-	      }else if(color.equalsIgnoreCase("olive")){
-	    	  Color = Color.OLIVE;
-	      }else if(color.equalsIgnoreCase("orange")){
-	    	  Color = Color.ORANGE;
-	      }else if(color.equalsIgnoreCase("purple")){
-	    	  Color = Color.PURPLE;
-	      }else if(color.equalsIgnoreCase("red")){
-	    	  Color = Color.RED;
-	      }else if(color.equalsIgnoreCase("silver")){
-	    	  Color = Color.SILVER;
-	      }else if(color.equalsIgnoreCase("teal")){
-	    	  Color = Color.TEAL;
-	      }else if(color.equalsIgnoreCase("white")){
-	    	  Color = Color.WHITE;
-	      }else if(color.equalsIgnoreCase("yellow")){
-	    	  Color = Color.YELLOW;
-	      }
-	      		
-	      team.setColor(Color);
+	      String color_string = snr.nextLine().trim();
+	      HGAPI.getPlugin().getLogger().info("Team Color: " + color_string);
+	      Color color = Color.fromRGB(Integer.parseInt(color_string));
+  
+	      team.setColor(color);
 	      
 	      HGAPI.getPlugin().getLogger().info("Team loaded " + team.getName());
           HGAPI.getTeamManager().addTeam(team);
@@ -143,7 +112,7 @@ public class TeamManager{
 
 		      PrintWriter pw = new PrintWriter(new File(fn));
 		      //Write Color
-		      pw.write("" + team.getColor() + "\r\n");
+		      pw.write("" + team.getColor().asRGB() + "\r\n");
 
 			  
 		      pw.close();

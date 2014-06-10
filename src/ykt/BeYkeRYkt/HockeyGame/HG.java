@@ -3,11 +3,15 @@ package ykt.BeYkeRYkt.HockeyGame;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -17,8 +21,8 @@ import org.mcstats.Metrics;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
+import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
-import ykt.BeYkeRYkt.HockeyGame.Commands.HArenaCommands;
 import ykt.BeYkeRYkt.HockeyGame.Commands.HockeyCommands;
 import ykt.BeYkeRYkt.HockeyGame.Listeners.GUIListener;
 import ykt.BeYkeRYkt.HockeyGame.Listeners.PlayerListener;
@@ -30,8 +34,13 @@ public class HG extends JavaPlugin{
 	private static YamlConfiguration LANG;
 	private static File LANG_FILE;
 	private String lang;
-	private HArenaCommands harena;
 	private HockeyCommands hockey;
+	private HashMap<String, Arena> arenas = new HashMap<String, Arena>();
+	private List<Player> teams_creators = new ArrayList<Player>();
+	private List<Player> arena_creators = new ArrayList<Player>();
+
+	private HashMap<String, Team> teams = new HashMap<String, Team>();
+    
 	
 	@Override
 	public void onEnable(){
@@ -62,7 +71,6 @@ public class HG extends JavaPlugin{
 		}
 		
 		this.api = new HGAPI(this);
-		this.harena = new HArenaCommands();
 		this.hockey = new HockeyCommands();
 		
 		this.lang = getConfig().getString("Lang");
@@ -71,7 +79,6 @@ public class HG extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
-		getCommand("harena").setExecutor(harena);
 		getCommand("hockey").setExecutor(hockey);
 		
 		//setupPermissions(); - Removed
@@ -89,12 +96,6 @@ public class HG extends JavaPlugin{
 		}else{
 			arenas.mkdirs();
 		}
-		
-		//Update
-		if(this.getConfig().getBoolean("Enable-updater")){
-			this.getLogger().info("Enabling update system...");
-			new UpdateContainer(this.getFile());
-		}
 				
 		//mcstats
 		try {
@@ -102,6 +103,13 @@ public class HG extends JavaPlugin{
 		   metrics.start();
 		} catch (IOException e) {
 		   // Failed to submit the stats :-(
+		}
+		
+		
+		//Update
+		if(this.getConfig().getBoolean("Enable-updater")){
+			this.getLogger().info("Enabling update system...");
+			new UpdateContainer(this.getFile());
 		}
 	}
 	
@@ -119,12 +127,14 @@ public class HG extends JavaPlugin{
 		if(arena.isRunning()){
 		arena.stopArena();
 		}
+		}
 		
+		for(Team team: HGAPI.getTeamManager().getTeams().values()){
+			HGAPI.getTeamManager().save(team);
 		}
 		
 		HandlerList.unregisterAll(this);
 		this.api = null;
-		this.harena = null;
 		this.hockey = null;
 		this.lang = null;
 		this.LANG = null;
@@ -142,10 +152,25 @@ public class HG extends JavaPlugin{
 		onEnable();
 	}
 	
-	public HArenaCommands getHArenaCommand(){
-		return harena;
+	public HockeyCommands getHockeyCommands(){
+		return hockey;
+	}
+
+	public List<Player> getArenaCreators(){
+		return arena_creators;
 	}
 	
+	public List<Player> getTeamCreators(){
+		return teams_creators;
+	}
+	
+	public HashMap<String, Arena> getDevArenas(){
+		return arenas;
+	}
+	
+	public HashMap<String, Team> getDevTeams(){
+		return teams;
+	}
 	
 	/**
 	 * Load the lang.yml file.

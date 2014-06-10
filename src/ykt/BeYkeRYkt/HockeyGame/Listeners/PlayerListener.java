@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -15,7 +17,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,10 +36,27 @@ import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.CustomGUIMenu;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
+import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 
 public class PlayerListener implements Listener{
 	
+	@EventHandler
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+			Player player = event.getPlayer();
+            String name = player.getName();
+			if (HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())) {
+				String msg = event.getMessage();
+				String[] split = msg.split(" ");
+				if ( split.length > 0 && split[0].startsWith("/")) {
+					String command = split[0].substring(1);
+					if (!command.equals("hockey")) {
+						HGAPI.sendMessage(player, Lang.NO_COMMANDS.toString() + Lang.ICON_ARENA_LEAVE.toString(), true);
+						event.setCancelled(true);
+					}
+				}
+			}
+	   }	
 	
 	@EventHandler
 	public void onPlayerJoinInv(PlayerJoinEvent event){
@@ -89,6 +110,14 @@ public class PlayerListener implements Listener{
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
+			
+			if(HGAPI.getPlugin().getArenaCreators().contains(player)){
+				Arena arena = HGAPI.getPlugin().getDevArenas().get(player.getName());
+				Location loc = new Location(block.getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY() + 1, block.getLocation().getBlockZ());
+				HGAPI.checkAndSave(player, arena, loc);
+			}
+			
+			
 			if(block.getType() == Material.GOLD_BLOCK){
 			if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
@@ -186,17 +215,17 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event){
 		Player player = event.getPlayer();
-		if(HGAPI.getPlugin().getHArenaCommand().getCreators().contains(player)){
-		  String message = event.getMessage();
+		String message = event.getMessage();
+		if(HGAPI.getPlugin().getArenaCreators().contains(player)){
 		  Arena arena = new Arena(message, player.getWorld());
-		  if(!HGAPI.getPlugin().getHArenaCommand().getArenas().containsKey(player.getName()) && !HGAPI.getArenaManager().getArenas().containsKey(message)){
-			  HGAPI.getPlugin().getHArenaCommand().getArenas().put(player.getName(), arena);
+		  if(!HGAPI.getPlugin().getDevArenas().containsKey(player.getName()) && !HGAPI.getArenaManager().getArenas().containsKey(message)){
+			  HGAPI.getPlugin().getDevArenas().put(player.getName(), arena);
 			  event.setCancelled(true);
 			  //player.sendMessage(Lang.TITLE.toString() + Lang.ENTER_NAME_THE_FIRST_TEAM);
-			  HGAPI.sendMessage(player, Lang.ENTER_NAME_THE_FIRST_TEAM.toString(), true);
+			  HGAPI.sendMessage(player, Lang.SELECT_THE_FIRST_TEAM.toString(), true);
 			  
 			  int size = 9 * 4;
-			  CustomGUIMenu menu = new CustomGUIMenu("Select the first team", size);
+			  CustomGUIMenu menu = new CustomGUIMenu(ChatColor.stripColor(Lang.SELECT_THE_FIRST_TEAM.toString()), size);
 				  List keys = new ArrayList(HGAPI.getTeamManager().getTeams().keySet());
 				  for (int i = 0; i < keys.size(); i++) {
 					    String obj = (String) keys.get(i);
@@ -212,11 +241,37 @@ public class PlayerListener implements Listener{
 			  
 			  player.openInventory(menu.getInventory());
 			  
-		  }else{
+		  }else if(!HGAPI.getPlugin().getDevArenas().containsKey(player.getName()) && HGAPI.getArenaManager().getArenas().containsKey(message)){
 			  //player.sendMessage(Lang.TITLE.toString() + Lang.ARENA_NAME_IS_TAKEN.toString());
 			  HGAPI.sendMessage(player, Lang.ARENA_NAME_IS_TAKEN.toString(), true);
 			  event.setCancelled(true);  
 		  }
+		}
+		
+		if(HGAPI.getPlugin().getTeamCreators().contains(player)){
+			Team team = new Team(message);
+			  if(!HGAPI.getPlugin().getDevTeams().containsKey(player.getName()) && !HGAPI.getTeamManager().getTeams().containsKey(message)){
+				  HGAPI.getPlugin().getDevTeams().put(player.getName(), team);
+				  event.setCancelled(true);
+				  HGAPI.sendMessage(player, Lang.SELECT_TEAM_COLOR.toString(), true);
+				  
+				  int size = 9 * 4;
+				  CustomGUIMenu menu = new CustomGUIMenu(ChatColor.stripColor(Lang.SELECT_TEAM_COLOR.toString()), size);
+				  
+				  for(Color color : HGAPI.getColors()){
+					  ItemStack item = new ItemStack(Material.LEATHER_HELMET);
+					  LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+					  meta.setColor(color);
+					  item.setItemMeta(meta);
+					  menu.addItem(item, HGAPI.getColors().indexOf(color));
+				  }
+				  
+				  player.openInventory(menu.getInventory());
+				  
+			  }else if(!HGAPI.getPlugin().getDevTeams().containsKey(player.getName()) && HGAPI.getTeamManager().getTeams().containsKey(message)){
+				  HGAPI.sendMessage(player, Lang.TEAM_NAME_IS_TAKEN.toString(), true);
+				  event.setCancelled(true);   
+			  }
 		}
 	}
 	
@@ -226,13 +281,26 @@ public class PlayerListener implements Listener{
 	Player player = event.getPlayer();
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-		if(event.getItem() == null || hp.getArena().getPuckEntity().getItem() == null) return;
+		if(hp.getArena().getPuckEntity() == null || hp.getArena().getPuckEntity().getItem() == null) return;
 		if(event.getItem().getEntityId() == hp.getArena().getPuckEntity().getItem().getEntityId()){
 		event.setCancelled(true);
 		}
 	}
   }
 	    
+	@EventHandler
+	public void onPlayerDamage(EntityDamageEvent event) {
+		Entity target = event.getEntity();
+		if(target instanceof Player){
+		Player player = (Player) target;
+		String name = player.getName();
+		if(HGAPI.getPlayerManager().getPlayers().containsKey(name)){
+        if(player.getHealth() < 4){
+	    player.setHealth(4);
+        }
+		}
+		}
+  }
 	
 	@EventHandler
 	public void onPlayerDrop(PlayerDropItemEvent event) {
