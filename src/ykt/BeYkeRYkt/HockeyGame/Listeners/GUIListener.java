@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.CustomGUIMenu;
+import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.Menus;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
@@ -98,31 +99,14 @@ public class GUIListener implements Listener{
 				if(Icons.getChangeLang().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Icons.getChangeLang().getItemMeta().getDisplayName(), 45);
-					
-					for(String lang: Icons.getLangList()){
-						menu.addItem(Icons.getLang(lang) ,Icons.getLangList().indexOf(lang));
-					}
-					
-					player.openInventory(menu.getInventory());
-					
+                    Menus.openChangeLangMenu(player);
+
 					//Арены
 				}else if(Icons.getArenas().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Icons.getArenas().getItemMeta().getDisplayName(), 45);
+					Menus.openArenasMenu(player);
 					
-					List<String> musor = new ArrayList<String>();
-					
-					for(String arenas: HGAPI.getArenaManager().getArenas().keySet()){
-						musor.add(arenas);
-					}
-					
-					for(String arena: musor){
-					menu.addItem(Icons.getArena(arena), musor.indexOf(arena));
-					}
-					
-					player.openInventory(menu.getInventory());
 					//Перезагрузка
 				}else if(Icons.getReload().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					player.closeInventory();
@@ -130,30 +114,19 @@ public class GUIListener implements Listener{
 					HGAPI.sendMessage(player, Lang.PLUGIN_RESTARTED.toString(), true);
 					//Выход из арены
 				}else if(Icons.getArenaLeave(Lang.ICON_ARENA_LEAVE.toString()).getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
+					player.closeInventory();
 					HockeyPlayer hplayer = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
 					hplayer.getArena().leavePlayer(hplayer);	
 					//Арена менеджер
 				}else if(Icons.getArenaManager().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Icons.getArenaManager().getItemMeta().getDisplayName(), 9);
-					
-					menu.addItem(Icons.getCreateArena(), 0);
-					menu.addItem(Icons.getDeleteArena(), 1);
-					menu.addItem(Icons.getStopArena(), 2);
-					
-					player.openInventory(menu.getInventory());
+					Menus.openArenaManagerMenu(player);
 					//Team
 				}else if(Icons.getTeamManager().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Icons.getTeamManager().getItemMeta().getDisplayName(), 9);
-					
-					menu.addItem(Icons.getCreateTeam(), 0);
-					menu.addItem(Icons.getDeleteTeam(), 1);
-					
-					player.openInventory(menu.getInventory());
-					
+                    Menus.openTeamManagerMenu(player);
 					
 					//Следующий шаг
 				}else if(Icons.getNextStage().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
@@ -223,12 +196,7 @@ public class GUIListener implements Listener{
 						player.closeInventory();
 						HGAPI.sendMessage(player, Lang.ARENA_FULL.toString(), true); 
 					}else{
-						CustomGUIMenu menu = new CustomGUIMenu(clicked.getItemMeta().getDisplayName(), 9);
-						
-						menu.addItem(Icons.getTeam(arena, arena.getFirstTeam().getName()), 0);
-						menu.addItem(Icons.getTeam(arena, arena.getSecondTeam().getName()), 1);
-						
-						player.openInventory(menu.getInventory());
+						Menus.openTeamArenaMenu(arena, player, clicked.getItemMeta().getDisplayName());
 					}
 				}
 			}else if(HGAPI.getArenaManager().getArenas().containsKey(ChatColor.stripColor(name))){
@@ -284,35 +252,12 @@ public class GUIListener implements Listener{
 					//Arena list
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Lang.ICON_DELETE_ARENA.toString(), 45);
-					
-					List<String> musor = new ArrayList<String>();
-					
-					for(String arenas: HGAPI.getArenaManager().getArenas().keySet()){
-						musor.add(arenas);
-					}
-					
-					for(String arena: musor){
-					menu.addItem(Icons.getArena(arena), musor.indexOf(arena));
-					}
-					
-					player.openInventory(menu.getInventory());
+					Menus.openDeleterArenasMenu(player);
 				}else if(Icons.getStopArena().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
 					//Arena list
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Lang.ICON_STOP_ARENA.toString(), 45);
-					
-					List<String> musor = new ArrayList<String>();
-					
-					for(String arenas: HGAPI.getArenaManager().getArenas().keySet()){
-						musor.add(arenas);
-					}
-					
-					for(String arena: musor){
-					menu.addItem(Icons.getArena(arena), musor.indexOf(arena));
-					}
-					player.openInventory(menu.getInventory());
+					Menus.openStoperArenaMenu(player);
 				}
 				
 			//Teams
@@ -329,19 +274,7 @@ public class GUIListener implements Listener{
 					//Arena list
 					player.closeInventory();
 					
-					CustomGUIMenu menu = new CustomGUIMenu(Lang.ICON_DELETE_TEAM.toString(), 45);
-					
-					List<String> musor = new ArrayList<String>();
-					
-					for(String arenas: HGAPI.getTeamManager().getTeams().keySet()){
-						musor.add(arenas);
-					}
-					
-					for(String arena: musor){
-					menu.addItem(Icons.getTeam(arena), musor.indexOf(arena));
-					}
-					
-					player.openInventory(menu.getInventory());
+					Menus.openDeleterTeamMenu(player);
 				}
 				//Удаление арены
 			}else if(Icons.getDeleteArena().getItemMeta().getDisplayName().equals(name)){
@@ -351,8 +284,9 @@ public class GUIListener implements Listener{
 					
 					HGAPI.getArenaManager().deleteArena(arena);
 					
-					player.closeInventory();
 					HGAPI.sendMessage(player, Lang.ARENA_DELETED.toString(), true);
+					
+					Menus.openDeleterArenasMenu(player);
 				}
 				//Удаление команды
 			}else if(Icons.getDeleteTeam().getItemMeta().getDisplayName().equals(name)){
@@ -362,8 +296,9 @@ public class GUIListener implements Listener{
 					
 					HGAPI.getTeamManager().deleteTeam(team);
 					
-					player.closeInventory();
 					HGAPI.sendMessage(player, Lang.TEAM_DELETED.toString(), true);
+					
+					Menus.openDeleterTeamMenu(player);
 				}
 				//Стоп арены
 			}else if(Icons.getStopArena().getItemMeta().getDisplayName().equals(name)){
@@ -371,7 +306,15 @@ public class GUIListener implements Listener{
 				if(HGAPI.getArenaManager().getArenas().keySet().contains(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()))){
 					Arena arena = HGAPI.getArenaManager().getArena(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
 
+					if(arena.isRunning()){
+					arena.startRewards();
 					arena.stopArena();
+					}else{
+					if(!arena.getPlayers().isEmpty()){
+					arena.stopArena();
+					}
+					}
+					
 					player.closeInventory();
 				}
 			}

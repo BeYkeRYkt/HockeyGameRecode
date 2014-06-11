@@ -50,7 +50,7 @@ public class PlayerListener implements Listener{
 				String[] split = msg.split(" ");
 				if ( split.length > 0 && split[0].startsWith("/")) {
 					String command = split[0].substring(1);
-					if (!command.equals("hockey")) {
+					if (!HGAPI.getPlugin().getWhitelistCommands().contains(command)) {
 						HGAPI.sendMessage(player, Lang.NO_COMMANDS.toString() + Lang.ICON_ARENA_LEAVE.toString(), true);
 						event.setCancelled(true);
 					}
@@ -113,7 +113,7 @@ public class PlayerListener implements Listener{
 			
 			if(HGAPI.getPlugin().getArenaCreators().contains(player)){
 				Arena arena = HGAPI.getPlugin().getDevArenas().get(player.getName());
-				Location loc = new Location(block.getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY() + 1, block.getLocation().getBlockZ());
+				Location loc = new Location(block.getWorld(), block.getLocation().getBlockX(), block.getLocation().getY() + 1, block.getLocation().getBlockZ());
 				HGAPI.checkAndSave(player, arena, loc);
 			}
 			
@@ -127,11 +127,8 @@ public class PlayerListener implements Listener{
 					hp.setReady(true);
 					hp.getArena().broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_READY.toString());
 					
-					//for(HockeyPlayer players: hp.getArena().getPlayers()){
-					//if(players.isReady()){
 					hp.getArena().startCountToStartRunnable();
-					//}
-					//}
+	
 					
 				}else if(hp.isReady()){					
 					for(HockeyPlayer players: hp.getArena().getPlayers()){
@@ -281,8 +278,7 @@ public class PlayerListener implements Listener{
 	Player player = event.getPlayer();
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-		if(hp.getArena().getPuckEntity() == null || hp.getArena().getPuckEntity().getItem() == null) return;
-		if(event.getItem().getEntityId() == hp.getArena().getPuckEntity().getItem().getEntityId()){
+		if(hp.getArena().isRunning()){
 		event.setCancelled(true);
 		}
 	}
@@ -306,7 +302,10 @@ public class PlayerListener implements Listener{
 	public void onPlayerDrop(PlayerDropItemEvent event) {
 	Player player = event.getPlayer();
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
+		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
+		if(hp.getArena().isRunning()){
 		event.setCancelled(true);
+		}
 	}
   }
 

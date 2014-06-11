@@ -59,18 +59,39 @@ public class HG extends JavaPlugin{
 				fc.addDefault("Game.MatchTimer", 200);
 				fc.addDefault("Game.MusicMatch", true);
 				fc.addDefault("Game.puck.material", "RECORD_7");
-				fc.addDefault("Game.PowerBeat.Winger", 0.5);
-				fc.addDefault("Game.PowerBeat.Defender", 0.3);
-				fc.addDefault("Game.PowerBeat.Goalkeeper", 0.2);
+				fc.addDefault("Game.PowerBeat.Winger", 0.6);
+				fc.addDefault("Game.PowerBeat.Defender", 0.4);
+				fc.addDefault("Game.PowerBeat.Goalkeeper", 0.3);
+							
+				//Rewards
+				List<String> win = new ArrayList<String>();
+				win.add("266:3");
+				win.add("264:1");
+				
+				List<String> loss = new ArrayList<String>();
+				loss.add("1:1");
+				
+				fc.addDefault("Game.Rewards.Winners", win);
+				fc.addDefault("Game.Rewards.Losers", loss);
+				
+				//Whitelist
+				List<String> list = new ArrayList<String>();
+				list.add("hockey");
+				list.add("msg");
+				list.add("reload");
+				list.add("kick");
+				list.add("ban");
+				
+				fc.addDefault("Whitelist-commands", list);
 				fc.options().copyDefaults(true);
 				saveConfig();
 				fc.options().copyDefaults(false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
+		}		
 		this.api = new HGAPI(this);
+		
 		this.hockey = new HockeyCommands();
 		
 		this.lang = getConfig().getString("Lang");
@@ -122,17 +143,13 @@ public class HG extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		for(Arena arena: HGAPI.getArenaManager().getArenas().values()){
-		HGAPI.getArenaManager().save(arena);
+		//HGAPI.getArenaManager().save(arena);
 		
 		if(arena.isRunning()){
 		arena.stopArena();
 		}
 		}
-		
-		for(Team team: HGAPI.getTeamManager().getTeams().values()){
-			HGAPI.getTeamManager().save(team);
-		}
-		
+
 		HandlerList.unregisterAll(this);
 		this.api = null;
 		this.hockey = null;
@@ -150,6 +167,18 @@ public class HG extends JavaPlugin{
 	public void reloadPlugin(){
 		onDisable();
 		onEnable();
+	}
+	
+	public List<String> getWhitelistCommands(){
+		return getConfig().getStringList("Whitelist-commands");
+	}
+	
+	public List<String> getWinnersRewards(){
+		return getConfig().getStringList("Game.Rewards.Winners");
+	}
+	
+	public List<String> getLosersRewards(){
+		return getConfig().getStringList("Game.Rewards.Losers");
 	}
 	
 	public HockeyCommands getHockeyCommands(){

@@ -20,7 +20,7 @@ public class SignListener implements Listener{
 	public void onSignCreate(SignChangeEvent e) {
 		Player player = e.getPlayer();
 		if (e.getLine(0).equalsIgnoreCase("[HockeyGame]")) {
-			if (!player.hasPermission("hg.setup")) {
+			if (!player.hasPermission("hg.admin")) {
 				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
 				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString(), false);
 				e.setCancelled(true);
@@ -59,7 +59,7 @@ public class SignListener implements Listener{
 		Player player = e.getPlayer();
 		Sign sign = (Sign) e.getBlock().getState();
 		if (sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "[" + ChatColor.WHITE + HGAPI.getPlugin().getName() + ChatColor.RED + "]")) {
-			if (!player.hasPermission("hg.setup")) {
+			if (!player.hasPermission("hg.admin")) {
 				//player.sendMessage(Lang.TITLE.toString() + Lang.NO_PERMISSION);
 				HGAPI.sendMessage(player, Lang.NO_PERMISSION.toString(), false);
 				e.setCancelled(true);

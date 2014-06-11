@@ -101,26 +101,8 @@ public class ArenaRunnable extends BukkitRunnable{
 		}
 		
 		if(seconds == 0){
-			if(arena.getFirstTeamScores() > arena.getSecondTeamScores()){
-				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getFirstTeam().getName() + Lang.TEAM_WIN.toString(), true);
-				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
-				
-				for(HockeyPlayer player: arena.getFirstTeam().getMembers()){
-					HGAPI.spawnRandomFirework(arena.getWorld(), player.getBukkitPlayer().getLocation());
-				}
-				
-			}else if(arena.getFirstTeamScores() < arena.getSecondTeamScores()){
-				HGAPI.sendMessageAll(ChatColor.GOLD + arena.getSecondTeam().getName() + Lang.TEAM_WIN.toString(), true);
-				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
-				
-				for(HockeyPlayer player: arena.getSecondTeam().getMembers()){
-					HGAPI.spawnRandomFirework(arena.getWorld(), player.getBukkitPlayer().getLocation());
-				}
-			}else if(arena.getFirstTeamScores() == arena.getSecondTeamScores()){
-				HGAPI.sendMessageAll(Lang.TIE.toString(), true);
-				HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + arena.getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + arena.getSecondTeamScores(), true);
-			}
-			
+
+			arena.startRewards();
 			arena.stopArena();
 		}
 		

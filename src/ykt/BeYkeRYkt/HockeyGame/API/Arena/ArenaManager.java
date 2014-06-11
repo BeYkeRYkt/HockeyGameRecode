@@ -257,15 +257,15 @@ public class ArenaManager{
 		      
 		      //Goals from Team A
 		      toWrite = "";
-			  for (Object item: arena.getFirstTeamGates()) {
-				  pw.write( "" + ((Location) item).getX() + "%" + ((Location) item).getY() + "%" + ((Location) item).getZ() + "\r\n");
+			  for (Location item: arena.getFirstTeamGates()) {
+				  pw.write( "" + item.getX() + "%" + item.getY() + "%" + item.getZ() + "\r\n");
 			  }
 			  pw.write("---\r\n");
 
 			  //Goals from Team B
 		      toWrite = "";
-			  for (Object item: arena.getSecondTeamGates()) {
-				  pw.write( "" + ((Location) item).getX() + "%" + ((Location) item).getY() + "%" + ((Location) item).getZ() + "\r\n");
+			  for (Location item: arena.getSecondTeamGates()) {
+				  pw.write( "" + item.getX() + "%" + item.getY() + "%" + item.getZ() + "\r\n");
 			  }
 			  pw.write("---\r\n");
 		      

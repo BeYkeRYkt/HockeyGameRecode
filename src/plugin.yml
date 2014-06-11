@@ -8,8 +8,6 @@ commands:
     description: Main commands
     usage: /<command> [args]
 permissions:
-  hg.setup:
-    default: false
   hg.admin:
     default: false
   hg.playing:

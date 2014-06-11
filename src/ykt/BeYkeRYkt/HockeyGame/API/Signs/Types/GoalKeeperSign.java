@@ -24,10 +24,8 @@ public class GoalKeeperSign implements SignType{
 	
 	@Override
 	public void handleCreateSign(SignChangeEvent event) {
-		String className = event.getLine(1);
-		ClassType type = api.getClassManager().getClass(className);
-		
-	    if(type != null){
+		String className = event.getLine(1);		
+	    if(api.getClassManager().getClass(className) != null){
 			event.setLine(0, ChatColor.RED + "[" + HGAPI.getPlugin().getName() + "]");
 			//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.SUCCESS_SIGN_CREATE.toString());
 			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_CREATE.toString(), false);

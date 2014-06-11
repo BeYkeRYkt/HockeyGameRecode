@@ -23,25 +23,25 @@ public class JoinSign implements SignType{
 		this.api = api;
 	}
 	
-	@SuppressWarnings("unused")
 	@Override
 	public void handleCreateSign(SignChangeEvent event) {
 		String arenaName = event.getLine(2);
 		String teamName = event.getLine(3);
+	    if(api.getArenaManager().getArena(arenaName) != null){
 	    Arena arena = api.getArenaManager().getArena(arenaName);
+	    if(arena.getTeam(teamName) != null){
 	    Team team = arena.getTeam(teamName);
-	    if(arena != null && team != null){
 			event.setLine(0, ChatColor.RED + "[" + HGAPI.getPlugin().getName() + "]");
 			//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.SUCCESS_SIGN_CREATE.toString());
 			HGAPI.sendMessage(event.getPlayer(), Lang.SUCCESS_SIGN_CREATE.toString(), false);
 			event.getBlock().getState().update(true);
-	    }else if(arena == null){
-			//event.getPlayer().sendMessage(Lang.TITLE.toString() + Lang.ARENA_DOES_NOT_EXIT.toString());
-			HGAPI.sendMessage(event.getPlayer(), Lang.ARENA_DOES_NOT_EXIT.toString(), false);
+	    }else if(arena.getTeam(teamName) == null){
+			HGAPI.sendMessage(event.getPlayer(), Lang.TEAM_DOES_NOT_EXIT.toString(), false);
 			event.setCancelled(true);
 			event.getBlock().breakNaturally();
-	    }else if(arena != null && team == null){
-			HGAPI.sendMessage(event.getPlayer(), Lang.TEAM_DOES_NOT_EXIT.toString(), false);
+	    }
+	    }else if(api.getArenaManager().getArena(arenaName) == null){
+			HGAPI.sendMessage(event.getPlayer(), Lang.ARENA_DOES_NOT_EXIT.toString(), false);
 			event.setCancelled(true);
 			event.getBlock().breakNaturally();
 	    }

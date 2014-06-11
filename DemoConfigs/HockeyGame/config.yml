@@ -9,6 +9,18 @@ Game:
   puck:
     material: RECORD_7
   PowerBeat:
-    Winger: 0.5
-    Defender: 0.3
-    Goalkeeper: 0.2
+    Winger: 0.6
+    Defender: 0.4
+    Goalkeeper: 0.3
+  Rewards:
+    Winners:
+    - '266:3'
+    - '264:1'
+    Losers:
+    - '1:1'
+Whitelist-commands:
+- hockey
+- msg
+- reload
+- kick
+- ban

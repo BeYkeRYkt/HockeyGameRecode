@@ -14,7 +14,7 @@ public enum Lang {
     GATE_STORED("gate-stored", "&aGate stored."),
     HOCKEY_STICK("hockey-stick", "&l&2Hockey Stick"),
     SUCCESS_SIGN_CREATE("success-sign-create", "&aSign succesfully created!"),
-    ARENA_SUCCESS_CREATE("arena-success-create", "&aArena succesfully created!"),
+    
     SUCCESS_SIGN_REMOVE("success-sign-remove", "&aSign succesfully removed!"),
     CHANGE_CLASS("change-class", "&aYour class has been changed."),
     CLASS_FULL("class-full", "&cThis class is full. Select another class."),

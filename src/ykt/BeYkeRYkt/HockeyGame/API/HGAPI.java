@@ -10,11 +10,13 @@ import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.HG;
@@ -223,5 +225,20 @@ public class HGAPI{
 		HGAPI.getPlugin().getDevArenas().remove(player.getName());
 		HGAPI.getPlugin().getArenaCreators().remove(player);
 		HGAPI.sendMessage(player, Lang.ARENA_SAVED.toString(), true);
+	}
+	
+	//For Rewards
+	public static ItemStack parseString(String itemId) {
+	    String[] parts = itemId.split(":");
+	    int matId = Integer.parseInt(parts[0]);
+	    if (parts.length == 2) {
+	        int amount = Integer.parseInt(parts[1]);
+	        return new ItemStack(Material.getMaterial(matId), amount);
+	    }else if(parts.length == 3){
+	        int amount = Integer.parseInt(parts[1]);
+	        short data = Short.parseShort(parts[2]);
+	        return new ItemStack(Material.getMaterial(matId), amount, data);
+	    }   
+	    return new ItemStack(Material.getMaterial(matId));
 	}
 }

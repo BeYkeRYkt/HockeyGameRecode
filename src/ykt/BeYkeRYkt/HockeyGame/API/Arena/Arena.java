@@ -51,6 +51,8 @@ public class Arena{
 	private Puck puckentity;
 	private boolean firstgatefull = false;
 	private boolean secondgatefull = false;
+	private Team loser;
+	private Team winner;
 	
 	
 	public Arena(String arenaName){
@@ -206,10 +208,18 @@ public class Arena{
 	//ADD GATES
 	public void addFirstTeamGate(Location loc){
 		getFirstTeamGates().add(loc);
+		//loc.setY(loc.getY() - 1.0);
+		//getFirstTeamGates().add(loc);
+		//loc.setY(loc.getY() + 2.0);
+		//getFirstTeamGates().add(loc);
 	}
 	
 	public void addSecondTeamGate(Location loc){
 		getSecondTeamGates().add(loc);
+		//loc.setY(loc.getY() - 1.0);
+		//getSecondTeamGates().add(loc);
+		//loc.setY(loc.getY() + 2.0);
+		//getSecondTeamGates().add(loc);
 	}
 	
 	
@@ -292,8 +302,7 @@ public class Arena{
 		player.getBukkitPlayer().getInventory().clear();
 		player.getBukkitPlayer().getInventory().setArmorContents(null);
 		player.getBukkitPlayer().updateInventory();
-		HGAPI.getItemSaver().loadPlayer(player.getBukkitPlayer());
-		
+				
 		if(player.getType() != null){
 		if(team.getWingers().contains(player)){
 			team.removeWinger(player);
@@ -307,6 +316,15 @@ public class Arena{
 		getPlayers().remove(player);
 		team.getMembers().remove(player);
 		HGAPI.getPlayerManager().removePlayer(player.getName());
+		
+		//Fixing gamemode
+        HGAPI.getItemSaver().loadPlayer(player.getBukkitPlayer());
+		
+		if(getWinnerTeam() != null && team.getName().equals(getWinnerTeam().getName())){
+			rewardsWinner(player);
+		}else if(getLoserTeam() != null && team.getName().equals(getLoserTeam().getName())){
+			rewardsLoser(player);
+		}
 		
 		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName(), true);
 			
@@ -354,6 +372,11 @@ public class Arena{
 			setRunning(true);
 			
 			Puck puck = new Puck(this, item);
+			
+			//Food
+			for(HockeyPlayer players: getPlayers()){
+				players.getBukkitPlayer().getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 10));
+			}
 			
 			setPuckEntity(puck);
 			startMainRunnable(puck);
@@ -465,11 +488,56 @@ public class Arena{
 		broadcastMessage(Lang.MATCH_CONTINUES.toString());
 	}
 
+	public void rewardsWinner(HockeyPlayer player){
+		for(String materialID: HGAPI.getPlugin().getWinnersRewards()){
+			ItemStack item = HGAPI.parseString(materialID);
+			player.getBukkitPlayer().getInventory().addItem(item);
+		}
+	}
+	
+	public void rewardsLoser(HockeyPlayer player){
+		for(String materialID: HGAPI.getPlugin().getLosersRewards()){
+			ItemStack item = HGAPI.parseString(materialID);
+			player.getBukkitPlayer().getInventory().addItem(item);
+		}
+	}
+	
+	public void startRewards(){
+		   //Rewards
+				if(getFirstTeamScores() > getSecondTeamScores()){
+					HGAPI.sendMessageAll(ChatColor.GOLD + getFirstTeam().getName() + Lang.TEAM_WIN.toString(), true);
+					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores(), true);
+					
+					for(HockeyPlayer player: getFirstTeam().getMembers()){
+						HGAPI.spawnRandomFirework(getWorld(), player.getBukkitPlayer().getLocation());
+					}
+					
+					setWinnerTeam(getFirstTeam());
+					setLoserTeam(getSecondTeam());
+				}else if(getFirstTeamScores() < getSecondTeamScores()){
+					HGAPI.sendMessageAll(ChatColor.GOLD + getSecondTeam().getName() + Lang.TEAM_WIN.toString(), true);
+					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores(), true);
+					
+					for(HockeyPlayer player: getSecondTeam().getMembers()){
+						HGAPI.spawnRandomFirework(getWorld(), player.getBukkitPlayer().getLocation());
+					}
+					
+					setWinnerTeam(getSecondTeam());
+					setLoserTeam(getFirstTeam());
+				}else if(getFirstTeamScores() == getSecondTeamScores()){
+					HGAPI.sendMessageAll(Lang.TIE.toString(), true);
+					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE +getSecondTeamScores(), true);
+				}
+		
+	}
+	
 	public void stopArena() {   	
-		MatchStopEvent event = new MatchStopEvent(getPlayers(), this);
+	   MatchStopEvent event = new MatchStopEvent(getPlayers(), this);
 	   Bukkit.getPluginManager().callEvent(event);
 		
 	   if(!event.isCancelled()){
+		   
+
 	   setRunning(false);
 	   
 	   if(getMainRunnable() != null){
@@ -498,10 +566,29 @@ public class Arena{
 	   countrunnable = null;
 	   mainrun = null;
 	   puckentity = null;
+	   winner = null;
+	   loser = null;
 	   }
 	   
 	}
 	
+	public Team getWinnerTeam(){
+		return winner;
+	}
+	
+	public void setWinnerTeam(Team team){
+		this.winner = team;
+	}
+	
+	public Team getLoserTeam(){
+		return loser;
+	}
+	
+	public void setLoserTeam(Team team){
+		this.loser = team;
+	}
+	
 }
+
 	
 	
