@@ -43,4 +43,8 @@ public class MatchStopEvent extends Event implements Cancellable{
 	public void setCancelled(boolean flag) {
 		this.cancel = flag;
 	}
+	
+	public static HandlerList getHandlerList() {     
+		return handlers; 
+	}
 }

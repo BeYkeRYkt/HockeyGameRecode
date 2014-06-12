@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
+import ykt.BeYkeRYkt.HockeyGame.API.Addons.Addon;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.CustomGUIMenu;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.Menus;
@@ -163,7 +164,11 @@ public class GUIListener implements Listener{
 						HGAPI.getPlugin().getTeamCreators().remove(player);
 						HGAPI.sendMessage(player, Lang.CREATE_TEAM_CANCELLED.toString(), true);
 					}
+				//Addons
+				}else if(Icons.getAddons().getItemMeta().getDisplayName().equals(clicked.getItemMeta().getDisplayName())){
+					player.closeInventory();
 					
+					Menus.openAddonsMenu(player);
 				}
 				
 				//Смена языка
@@ -316,6 +321,20 @@ public class GUIListener implements Listener{
 					}
 					
 					player.closeInventory();
+				}
+			}else if(Icons.getAddons().getItemMeta().getDisplayName().equals(name)){
+				event.setCancelled(true);
+				if(HGAPI.getAddonManager().getAddon(ChatColor.stripColor(clicked.getItemMeta().getDisplayName())) != null){
+					Addon addon = HGAPI.getAddonManager().getAddon(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
+					
+					if(addon.isEnabled()){
+						HGAPI.getAddonManager().disableAddon(addon);
+						HGAPI.sendMessage(player, Lang.ADDON_DISABLED.toString(), true);
+					}else if(!addon.isEnabled()){
+						HGAPI.getAddonManager().enableAddon(addon);
+						HGAPI.sendMessage(player, Lang.ADDON_ENABLED.toString(), true);
+					}
+					Menus.openAddonsMenu(player);
 				}
 			}
 		}

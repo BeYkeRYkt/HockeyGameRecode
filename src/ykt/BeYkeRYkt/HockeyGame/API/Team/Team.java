@@ -25,7 +25,7 @@ public class Team{
 	
     //SYSTEM
 	public int getMaxMembers(){
-		return 6;
+		return (HGAPI.getPlugin().getConfig().getInt("Game.MaxPlayers")) / 2;
 	}
 	
 	public File getFile(){

@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
+import ykt.BeYkeRYkt.HockeyGame.API.Addons.Addon;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
@@ -67,7 +68,7 @@ public class Icons{
 		}
 		
 		meta.setLore(lore);
-		meta.setDisplayName(Lang.ICON_ARENAS.toString());
+		meta.setDisplayName(Lang.ICON_JOIN.toString());
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -181,7 +182,7 @@ public class Icons{
 		}
 		
 		meta.setLore(lore);
-		meta.setDisplayName(Lang.ARENA_MANAGER.toString());
+		meta.setDisplayName(Lang.ICON_ARENAS.toString());
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -202,7 +203,7 @@ public class Icons{
 		}
 		
 		meta.setLore(lore);
-		meta.setDisplayName(Lang.TEAM_MANAGER.toString());
+		meta.setDisplayName(Lang.ICON_TEAMS.toString());
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -271,6 +272,44 @@ public class Icons{
 		ItemMeta meta = item.getItemMeta();
 		
 		meta.setDisplayName(Lang.ICON_CANCEL.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+	
+	public static ItemStack getAddons() {
+		ItemStack item = new ItemStack(Material.CAULDRON_ITEM);
+		ItemMeta meta = item.getItemMeta();
+		
+		List<String> lore = new ArrayList<String>();
+		
+		lore.add(0, Lang.AVAILABLE_ADDONS.toString());
+		for(Addon addon: HGAPI.getAddonManager().getAddons()){	
+		List<String> addons = new ArrayList<String>();	
+        addons.add(addon.getName());
+        lore.add(addons.indexOf(addon.getName()) + 1, ChatColor.GOLD + addon.getName());
+		}
+		
+		meta.setLore(lore);
+		
+		meta.setDisplayName(Lang.ICON_ADDONS.toString());
+		item.setItemMeta(meta);
+		return item;
+	}
+	
+	public static ItemStack getAddon(String name) {
+		ItemStack item = new ItemStack(Material.CAULDRON_ITEM);
+		ItemMeta meta = item.getItemMeta();
+
+		List<String> lore = new ArrayList<String>();
+		Addon addon = HGAPI.getAddonManager().getAddon(name);
+		lore.add(0, Lang.ENABLED.toString() + ChatColor.YELLOW + String.valueOf(addon.isEnabled()));
+		lore.add(1, Lang.AUTHORS.toString());
+		for(String authors: addon.getAuthors()){
+		lore.add(ChatColor.YELLOW + authors);
+		}
+		
+		meta.setLore(lore);
+		meta.setDisplayName(name);
 		item.setItemMeta(meta);
 		return item;
 	}

@@ -52,7 +52,7 @@ public enum Lang {
     PLAYER_LEAVE_ARENA("player-leave-arena", "&6 leave to arena "),
     ICON_CHANGE_LANG("icon-change-lang", "&2Change language"),
     AVAILABLE_LANGUAGES("available-languages", "&aAvailable languages:"), 
-    ICON_ARENAS("icon-arenas", "&6Arenas"),
+    ICON_JOIN("icon-join", "&6Join"),
     ICON_JOIN_CLICK("icon-join-click", "&fClick here to join to arena."),
     ICON_LEAVE_CLICK("icon-leave-click", "&fClick here to leave to arena."),
     AVAILABLE_ARENAS("available-arenas", "&aAvailable arenas:"),
@@ -65,8 +65,8 @@ public enum Lang {
     TEAM_NAME_IS_TAKEN("team-name-is-taken", "&cThis name is already taken. Please choose another."),
     TEAM_SAVED("team-saved", "&aTeam succesfully saved!"),
     NO_COMMANDS("no-commands", "&aYou are in a hockey-match - use first &e/hockey &aand click "),
-    ARENA_MANAGER("arena-manager", "Arena manager"),
-    TEAM_MANAGER("team-manager", "Team manager"),
+    ICON_ARENAS("icon-arenas", "Arenas"),
+    ICON_TEAMS("icon-teams", "Teams"),
     ICON_CREATE_ARENA("icon-create-arena", "&aCreate arena"),
     ICON_DELETE_ARENA("icon-delete-arena", "&cDelete arena"),
     ICON_STOP_ARENA("icon-stop-arena", "&eStop arena"), 
@@ -78,7 +78,13 @@ public enum Lang {
     ICON_CANCEL("icon-cancel", "&cCancel"),
     CREATE_TEAM_CANCELLED("create-team-cancelled", "&aCreation of team was cancelled."),
     ARENA_DELETED("arena-deleted", "&aArena succesfully deleted!"),
-    TEAM_DELETED("team-deleted", "&aTeam succesfully deleted!");
+    TEAM_DELETED("team-deleted", "&aTeam succesfully deleted!"),
+    ICON_ADDONS("icon-addons", "&6Addons"),
+    AVAILABLE_ADDONS("available-addons", "&aAvailable addons:"),
+    ENABLED("enabled", "&aEnabled: "), 
+    AUTHORS("authors", "&aAuthors: "),
+    ADDON_DISABLED("addon-disabled", "&aAddon succesfully disabled!"),
+    ADDON_ENABLED("addon-enabled", "&aAddon succesfully enabled!");
 
     private String path;
     private String def;

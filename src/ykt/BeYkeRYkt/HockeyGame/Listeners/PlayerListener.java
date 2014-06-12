@@ -99,7 +99,7 @@ public class PlayerListener implements Listener{
     		hplayer.getTeam().getMembers().remove(hplayer);
     		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
     		
-    		if(hplayer.getArena().getPlayers().size() < 2){
+    		if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
     			hplayer.getArena().stopArena();
     		}
 		}
@@ -118,32 +118,30 @@ public class PlayerListener implements Listener{
 			}
 			
 			
-			if(block.getType() == Material.GOLD_BLOCK){
-			if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
-				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-			if(hp.getType() != null){
-				if(hp.getArena().isRunning()) return;
-				if(!hp.isReady()){
-					hp.setReady(true);
-					hp.getArena().broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_READY.toString());
+			//if(block.getType() == Material.GOLD_BLOCK){
+			//if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
+				//HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
+			//if(hp.getType() != null){
+				//if(hp.getArena().isRunning()) return;
+				//if(!hp.isReady()){
+					//hp.setReady(true);
+					//hp.getArena().broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_READY.toString());
 					
-					hp.getArena().startCountToStartRunnable();
-	
+					//hp.getArena().startCountToStartRunnable();			
+				//}else if(hp.isReady()){					
+					//for(HockeyPlayer players: hp.getArena().getPlayers()){
+					//if(players.isReady()){
+					//hp.getArena().getCountToStartRunnable().cancel();
+					//}
+					//}
 					
-				}else if(hp.isReady()){					
-					for(HockeyPlayer players: hp.getArena().getPlayers()){
-					if(players.isReady()){
-					hp.getArena().getCountToStartRunnable().cancel();
-					}
-					}
-					
-					hp.setReady(false);
-				}
-			}else{
-				HGAPI.sendMessage(player, Lang.PLAYER_NOT_READY.toString(), true);
-			}
-			}
-			}
+					//hp.setReady(false);
+				//}
+			//}else{
+				//HGAPI.sendMessage(player, Lang.PLAYER_NOT_READY.toString(), true);
+			//}
+			//}
+			//}
 		}
 		
 		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK ){
@@ -362,7 +360,7 @@ public class PlayerListener implements Listener{
 		hplayer.getTeam().getMembers().remove(hplayer);
 		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
 		
-		if(hplayer.getArena().getPlayers().size() < 2){
+		if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
 			hplayer.getArena().stopArena();
 		}
 		

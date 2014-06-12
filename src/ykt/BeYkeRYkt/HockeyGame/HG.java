@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -20,7 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
+import ykt.BeYkeRYkt.HockeyGame.API.Addons.Addon;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
+import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 import ykt.BeYkeRYkt.HockeyGame.Commands.HockeyCommands;
@@ -57,6 +60,9 @@ public class HG extends JavaPlugin{
 				fc.addDefault("Enable-updater", true);
 				fc.addDefault("Lang", "English");
 				fc.addDefault("Game.MatchTimer", 200);
+				fc.addDefault("Game.CountToStart", 30);
+				fc.addDefault("Game.MinPlayers", 2);
+				fc.addDefault("Game.MaxPlayers", 12);
 				fc.addDefault("Game.MusicMatch", true);
 				fc.addDefault("Game.puck.material", "RECORD_7");
 				fc.addDefault("Game.PowerBeat.Winger", 0.6);
@@ -144,11 +150,14 @@ public class HG extends JavaPlugin{
 	public void onDisable(){
 		for(Arena arena: HGAPI.getArenaManager().getArenas().values()){
 		//HGAPI.getArenaManager().save(arena);
-		
-		if(arena.isRunning()){
 		arena.stopArena();
 		}
-		}
+
+		 for(Iterator<Addon> it = HGAPI.getAddonManager().getAddons().iterator(); it.hasNext(); ){
+			   Addon addon = it.next();
+			   it.remove();
+			   HGAPI.getAddonManager().removeAddon(addon);
+		 }
 
 		HandlerList.unregisterAll(this);
 		this.api = null;
@@ -156,6 +165,10 @@ public class HG extends JavaPlugin{
 		this.lang = null;
 		this.LANG = null;
 		this.LANG_FILE = null;
+		this.arena_creators.clear();
+		this.arenas.clear();
+		this.teams.clear();
+		this.teams_creators.clear();
 	}
 	
 	public void reloadLang(){	
@@ -220,6 +233,7 @@ public class HG extends JavaPlugin{
 	                defConfig.save(lang);
 	                Lang.setFile(defConfig);
 	            }
+
 	        } catch(IOException e) {
 	            e.printStackTrace(); // So they notice
 	            getLogger().severe("[HockeyGame] Couldn't create language file.");

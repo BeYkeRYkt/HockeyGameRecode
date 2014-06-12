@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import ykt.BeYkeRYkt.HockeyGame.HG;
+import ykt.BeYkeRYkt.HockeyGame.API.Addons.AddonManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.ArenaManager;
 import ykt.BeYkeRYkt.HockeyGame.API.Classes.ClassManager;
@@ -39,6 +40,7 @@ public class HGAPI{
 	private static TeamManager teams;
 	private static PlayerSaver saver;
 	private static List<Color> colors;
+	private static AddonManager addons;
 	
 	public HGAPI(HG plugin){
 		this.plugin = plugin;
@@ -53,6 +55,7 @@ public class HGAPI{
 		this.arena = new ArenaManager(this);
 		this.saver = new PlayerSaver();
 		this.colors = new ArrayList<Color>();
+
 		saver.loadAllPlayers();
 		
 		colors.add(Color.AQUA);
@@ -72,6 +75,7 @@ public class HGAPI{
 		colors.add(Color.TEAL);
 		colors.add(Color.WHITE);
 		colors.add(Color.YELLOW);
+		this.addons = new AddonManager(this);
 	}
 	
 	public static ArenaManager getArenaManager(){
@@ -240,5 +244,9 @@ public class HGAPI{
 	        return new ItemStack(Material.getMaterial(matId), amount, data);
 	    }   
 	    return new ItemStack(Material.getMaterial(matId));
+	}
+
+	public static AddonManager getAddonManager() {
+		return addons;
 	}
 }

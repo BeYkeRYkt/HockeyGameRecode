@@ -41,4 +41,8 @@ public class PlayerLeaveArenaEvent extends Event implements Cancellable{
 	public void setCancelled(boolean flag) {
 		cancel = flag;
 	}
+	
+	public static HandlerList getHandlerList() {     
+		return handlers; 
+	}
 }

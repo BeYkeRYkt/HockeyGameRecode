@@ -4,7 +4,10 @@
 Enable-updater: true
 Lang: English
 Game:
-  MatchTimer: 200
+  MatchTimer: 60
+  CountToStart: 20
+  MinPlayers: 1
+  MaxPlayers: 12
   MusicMatch: true
   puck:
     material: RECORD_7
@@ -24,3 +27,5 @@ Whitelist-commands:
 - reload
 - kick
 - ban
+AddonTest:
+  test: test

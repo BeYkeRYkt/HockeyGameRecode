@@ -21,6 +21,8 @@ import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStartEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStopEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerJoinArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
+import ykt.BeYkeRYkt.HockeyGame.API.Events.RespawnPuckEvent;
+import ykt.BeYkeRYkt.HockeyGame.API.Events.StartPlayMusicEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
@@ -33,7 +35,7 @@ public class Arena{
 	private ArrayList<Location> blue_gates = new ArrayList<Location>();
 	private String name;
 	private ArrayList<HockeyPlayer> players = new ArrayList<HockeyPlayer>();
-	private int max = 12;
+	private int max = HGAPI.getPlugin().getConfig().getInt("Game.MaxPlayers");
 	private Team team1;
 	private Team team2;
 	private Location puck_loc;
@@ -288,7 +290,7 @@ public class Arena{
 		getPlayers().add(player);
 		HGAPI.getPlayerManager().addPlayer(player.getName(), player);
 		
-		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_JOIN_ARENA.toString() +ChatColor.GREEN + getName(), true);
+		broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_JOIN_ARENA.toString() +ChatColor.GREEN + getName());
 	}
 	}
 	
@@ -326,7 +328,7 @@ public class Arena{
 			rewardsLoser(player);
 		}
 		
-		HGAPI.sendMessageAll(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName(), true);
+		broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName());
 			
 		if(isRunning()){
 		if(getPlayers().size() < 2){
@@ -356,6 +358,7 @@ public class Arena{
 		MatchStartEvent event = new MatchStartEvent(getPlayers(), this);
 		Bukkit.getPluginManager().callEvent(event);
 		getCountToStartRunnable().cancel();
+		countrunnable = null;
 		
 		if(!event.isCancelled()){
 			
@@ -381,7 +384,7 @@ public class Arena{
 			setPuckEntity(puck);
 			startMainRunnable(puck);
 			
-			if(getPlayers().size() < 2){
+			if(getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
 				stopArena();
 				return;
 			}
@@ -394,29 +397,43 @@ public class Arena{
 	}
 
 	private void startPlayMusic() {	
+		StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation());
+		Bukkit.getPluginManager().callEvent(event);
+		
+		if(!event.isCancelled()){
 		Random random = new Random();
 		int amount = random.nextInt(9);
 		
 		if(amount == 0){
-			getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_3);
+			event.setRecord(Material.RECORD_3);
+			getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 			}else if(amount == 1){
-				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_4);
+				event.setRecord(Material.RECORD_4);
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord() );
 			}else if(amount == 2){
-				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_5);
+				event.setRecord(Material.RECORD_5);
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 			}else if(amount == 3){
-				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_6);
+				event.setRecord(Material.RECORD_6);
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 			}else if(amount == 4){
-				getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_7);
+				event.setRecord(Material.RECORD_7);
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 	        }else if(amount == 5){
-	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_8);
+				event.setRecord(Material.RECORD_8);
+	        	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 		    }else if(amount == 6){
-		    	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_9);
+				event.setRecord(Material.RECORD_9);
+		    	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 	        }else if(amount == 7){
-	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_10);
+				event.setRecord(Material.RECORD_10);
+	        	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
 	        }else if(amount == 8){
-	        	//getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_11);
-	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, Material.RECORD_12);
+				event.setRecord(Material.RECORD_12);
+	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, event.getRecord());
 	        }
+		
+		}
 	}
 
 	public Team getTeam(String teamName) {
@@ -444,9 +461,7 @@ public class Arena{
 	public void startCountToStartRunnable() {
 	   //Check...
 	   for(HockeyPlayer players : getPlayers()){
-		   if(!players.isReady()){
-			   return;
-		   }
+		   if(!players.isReady()) return;
 	   }
 	   
 	   this.countrunnable = new CountToStartRunnable(this);
@@ -476,7 +491,12 @@ public class Arena{
 	public void respawnPuck(){
 
 		Item item = getWorld().dropItemNaturally(getPuckLocation(), getPuck());
+		
 		Puck puck = new Puck(this, item);
+		RespawnPuckEvent event = new RespawnPuckEvent(this, puck, getPuckLocation());
+		Bukkit.getPluginManager().callEvent(event);
+		
+		if(!event.isCancelled()){
 		setPuckEntity(puck);
 		getMainRunnable().setPuck(puck);
 		
@@ -486,6 +506,9 @@ public class Arena{
 		HGAPI.playEffect(getWorld(), getPuckLocation(), Effect.SMOKE, 1);
 		
 		broadcastMessage(Lang.MATCH_CONTINUES.toString());
+		}else if(event.isCancelled()){
+			item.remove();
+		}
 	}
 
 	public void rewardsWinner(HockeyPlayer player){
@@ -536,9 +559,15 @@ public class Arena{
 	   Bukkit.getPluginManager().callEvent(event);
 		
 	   if(!event.isCancelled()){
-		   
-
 	   setRunning(false);
+	   
+		if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
+			getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, 0);
+		}
+	   
+	   if(getCountToStartRunnable() != null){
+		   getCountToStartRunnable().cancel();
+	   }
 	   
 	   if(getMainRunnable() != null){
 	   getMainRunnable().cancel();
@@ -558,7 +587,6 @@ public class Arena{
 	   }
 		getPuckEntity().clearItem();
 		getPuckEntity().clearPlayer();	
-		
 	   }
 		
 	   red_score = 0;

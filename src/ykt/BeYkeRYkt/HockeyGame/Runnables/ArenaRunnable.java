@@ -30,6 +30,10 @@ public class ArenaRunnable extends BukkitRunnable{
 		this.puck = puck;
 	}
 	
+	public int getSeconds(){
+		return seconds;
+	}
+	
 	@Override
 	public void run() {
 			for(Location loc: arena.getFirstTeamGates()){

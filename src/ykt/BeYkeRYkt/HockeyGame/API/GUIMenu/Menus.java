@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
+import ykt.BeYkeRYkt.HockeyGame.API.Addons.Addon;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 import ykt.BeYkeRYkt.HockeyGame.Commands.Icons;
@@ -28,6 +29,7 @@ public class Menus{
 		 //Delete arenas and teams
 		 menu.addItem(Icons.getArenaManager(), 3);
 		 menu.addItem(Icons.getTeamManager(), 4);
+		 menu.addItem(Icons.getAddons(), 5);
 		 
 		 if(HGAPI.getPlugin().getArenaCreators().contains(player)){		
 		menu.addItem(Icons.getCancel(), 7);
@@ -35,7 +37,7 @@ public class Menus{
 		if(HGAPI.getPlugin().getDevArenas().containsKey(player.getName())){
 		Arena arena = HGAPI.getPlugin().getDevArenas().get(player.getName());
 		if(arena.getPuckLocation() != null){
-			menu.addItem(Icons.getNextStage(), 5);
+			menu.addItem(Icons.getNextStage(), 6);
 		}
 		}
 		
@@ -148,6 +150,14 @@ public class Menus{
 		player.openInventory(menu.getInventory());
 	}
 	
-	
+	public static void openAddonsMenu(Player player){
+		CustomGUIMenu menu = new CustomGUIMenu(Lang.ICON_ADDONS.toString(), 45);
+		
+		for(Addon addon: HGAPI.getAddonManager().getAddons()){
+			menu.addItem(Icons.getAddon(addon.getName()), HGAPI.getAddonManager().getAddons().indexOf(addon));
+		}
+		
+		player.openInventory(menu.getInventory());
+	}
 	
 }

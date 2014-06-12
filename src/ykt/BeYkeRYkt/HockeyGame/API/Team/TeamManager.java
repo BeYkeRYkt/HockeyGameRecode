@@ -61,7 +61,6 @@ public class TeamManager{
 		   }
 	}
 
-	@SuppressWarnings("resource")
 	public void LoadTeam(String fn) {
 	    try {
 	      File f = new File("plugins/HockeyGame/teams/"+fn);

@@ -12,23 +12,57 @@ import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 public class CountToStartRunnable extends BukkitRunnable{
 
 	private Arena arena;
-	private int seconds = 5;
+	private int seconds = HGAPI.getPlugin().getConfig().getInt("Game.CountToStart");
 
 	public CountToStartRunnable(Arena arena){
 		this.arena = arena;
+	}
+	
+	public int getSeconds(){
+		return seconds;
 	}
 		
 	@Override
 	public void run() {
 	
-		if(seconds < 6 && seconds > 0){
+		  for(HockeyPlayer players : arena.getPlayers()){
+			 if(!players.isReady()){
+				 arena.getCountToStartRunnable().cancel();
+			  }
+		   }
+		
+		
+		if(seconds == 30){
+		    for(HockeyPlayer players: arena.getPlayers()){
+				HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+			    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+			}
+		}else if(seconds == 25){
+		    for(HockeyPlayer players: arena.getPlayers()){
+				HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+			    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+			}
+		}else if(seconds == 20){
+			 for(HockeyPlayer players: arena.getPlayers()){
+					HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+				    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+			}
+		}else if(seconds == 15){
+			 for(HockeyPlayer players: arena.getPlayers()){
+					HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
+				    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
+			}
+		}
+		
+		
+		
+		if(seconds < 11 && seconds > 0){
 		    for(HockeyPlayer players: arena.getPlayers()){
 			HGAPI.sendMessage(players.getBukkitPlayer(), "" + ChatColor.YELLOW + seconds + ChatColor.GRAY + "...", false);
 		    HGAPI.playSound(players.getBukkitPlayer(), players.getBukkitPlayer().getLocation(), Sound.ITEM_BREAK, 1, 1);
 		    }
 		}
-		
-		
+
       if(seconds == 0){
     	  arena.broadcastMessage(Lang.GAME_STARTED.toString());
     	  arena.startArena();
