@@ -1,20 +1,15 @@
 package ykt.BeYkeRYkt.HockeyGame.API.Addons;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
@@ -27,7 +22,7 @@ import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
  */
 public class AddonManager {
 	
-	public List<Addon> addons = new ArrayList<Addon>();
+	private List<Addon> addons = new ArrayList<Addon>();
 	private HGAPI api;
 
 	public AddonManager(HGAPI api){
@@ -41,9 +36,12 @@ public class AddonManager {
 	}
 	
 	public void enableAddon(Addon addon){
+		
 		addon.onEnable();
 		addon.setEnabled(true);
 		addAddonListeners(addon);
+		registerPermission(addon);
+		
 		String authors = "";
 		
 		if(addon.getAuthors().size() >= 2){
@@ -87,7 +85,9 @@ public class AddonManager {
 	}
 	
 	public void disableAddon(Addon addon){
+		
 		removeAddonListeners(addon);
+		unregisterPermissions(addon);
 		addon.onDisable();
 		addon.setEnabled(false);
 		
@@ -108,6 +108,26 @@ public class AddonManager {
 			HandlerList.unregisterAll(listener);
 			addon.getListeners().remove(listener);
 		}
-		addon.getListeners().remove(addon.getName());
+	}
+	
+	public void registerPermission(Addon addon){
+		for(Permission permission: addon.getPermissions()){
+			Bukkit.getPluginManager().addPermission(permission);
+		}
+	}
+	
+	public void unregisterPermission(Permission permission){	
+		if(permission == null) return;
+		Bukkit.getPluginManager().removePermission(permission);
+	}
+	
+	public void unregisterPermissions(Addon addon){	
+		if(addon.getPermissions() == null) return;
+		 for(Iterator<Permission> it = addon.getPermissions().iterator(); it.hasNext(); ){
+			Permission permission = it.next();
+			it.remove();
+			unregisterPermission(permission);
+			addon.getPermissions().remove(permission);
+		}
 	}
 }

@@ -7,7 +7,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
-import ykt.BeYkeRYkt.HockeyGame.API.Arena.Puck;
 
 public class StartPlayMusicEvent extends Event implements Cancellable{
 
@@ -17,9 +16,10 @@ public class StartPlayMusicEvent extends Event implements Cancellable{
 	private Location loc;
 	private Arena arena;
 	
-	public StartPlayMusicEvent(Arena arena, Location loc){
+	public StartPlayMusicEvent(Arena arena, Location loc, Material record){
 		this.arena = arena;
 		this.loc = loc;
+		setRecord(record);
 	}
 	
 	public Arena getArena(){

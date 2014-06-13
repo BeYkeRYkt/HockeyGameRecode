@@ -303,7 +303,8 @@ public class Icons{
 		List<String> lore = new ArrayList<String>();
 		Addon addon = HGAPI.getAddonManager().getAddon(name);
 		lore.add(0, Lang.ENABLED.toString() + ChatColor.YELLOW + String.valueOf(addon.isEnabled()));
-		lore.add(1, Lang.AUTHORS.toString());
+		lore.add(1, Lang.VERSION.toString() + ChatColor.YELLOW + addon.getVersion());
+		lore.add(2, Lang.AUTHORS.toString());
 		for(String authors: addon.getAuthors()){
 		lore.add(ChatColor.YELLOW + authors);
 		}

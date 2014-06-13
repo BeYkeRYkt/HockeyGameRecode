@@ -84,7 +84,8 @@ public enum Lang {
     ENABLED("enabled", "&aEnabled: "), 
     AUTHORS("authors", "&aAuthors: "),
     ADDON_DISABLED("addon-disabled", "&aAddon succesfully disabled!"),
-    ADDON_ENABLED("addon-enabled", "&aAddon succesfully enabled!");
+    ADDON_ENABLED("addon-enabled", "&aAddon succesfully enabled!"),
+    VERSION("version", "&aVersion: ");
 
     private String path;
     private String def;

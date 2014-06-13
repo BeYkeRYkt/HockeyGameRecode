@@ -76,10 +76,10 @@ public class DefendSign implements SignType{
 				if(!player.isReady()){
 					player.setReady(true);
 					player.getArena().broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_READY.toString());
-					
 					player.getArena().startCountToStartRunnable();
 				}
-	    		
+
+	    	
 		    	}else{
 		    		 //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CLASS_FULL.toString());
 		    		 HGAPI.sendMessage(player.getBukkitPlayer(),  Lang.CLASS_FULL.toString(), false);

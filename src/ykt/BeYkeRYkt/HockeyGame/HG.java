@@ -23,7 +23,6 @@ import org.mcstats.Metrics;
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Addons.Addon;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
-import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 import ykt.BeYkeRYkt.HockeyGame.Commands.HockeyCommands;
@@ -227,7 +226,7 @@ public class HG extends JavaPlugin{
 	            getDataFolder().mkdir();
 	            dir.mkdir();
 	            lang.createNewFile();
-	            InputStream defConfigStream = this.getResource("/lang/" + this.lang + ".yml");
+	            InputStream defConfigStream = this.getResource("lang/" + this.lang + ".yml");
 	            if (defConfigStream != null) {
 	                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 	                defConfig.save(lang);

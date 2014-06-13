@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import org.bukkit.ChatColor;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
@@ -18,6 +19,14 @@ public class AddonLoader {
 
 	private static ClassLoader loader;
 	private static ClassLoader jarloader;
+	
+	public static ClassLoader getClassLoader(){
+		return loader;
+	}
+	
+	public static ClassLoader getJarClassLoader(){
+		return jarloader;
+	}
 	
 	public static List<Addon> load(String directory) {
 
@@ -48,7 +57,7 @@ public class AddonLoader {
 
 			if (!file.getName().endsWith(".class")) {
 				if (!file.getName().endsWith(".jar")) {
-					HGAPI.getPlugin().getServer().getConsoleSender().sendMessage(ChatColor.GRAY + file.getName() + " :Unknown format.");
+					HGAPI.getPlugin().getServer().getConsoleSender().sendMessage(ChatColor.RED + file.getName() + " :Unknown format.");
 					lastnameoa = "";
 					continue;
 				}else{
@@ -77,9 +86,7 @@ public class AddonLoader {
 		                    	//HGAPI.getPlugin().getLogger().info(className + jarFile.getName());
 	    						Class<?> aclass = jarloader.loadClass(className);				
 	    						Object object = aclass.newInstance();
-	    						if (!(object instanceof Addon)) {
-	    							//HGAPI.getPlugin().getLogger().warning("Not a valid add-on: " + aclass.getSimpleName());
-	    						}else{
+	    						if (object instanceof Addon) {
 	    						Addon a = (Addon) object;	
 
 	    						if (a == null || a.getName() == null){
@@ -93,11 +100,11 @@ public class AddonLoader {
 	    						je = null;
 	    						}
 	    					} catch (Exception ex) {
-	    						HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + className + " to fail to load!");
-	    						ex.printStackTrace();
+	    						//HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + className + " to fail to load!");
+	    						//ex.printStackTrace();
 	    					} catch (Error ex) {
-	    						HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + className + " to fail to load!");
-	    						ex.printStackTrace();
+	    						//HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + className + " to fail to load!");
+	    						//ex.printStackTrace();
 	    					}
 		                    }
 		                    }
@@ -122,19 +129,17 @@ public class AddonLoader {
 			try {
 				Class<?> aclass = loader.loadClass(name);				
 				Object object = aclass.newInstance();
-				if (!(object instanceof Addon)) {
-					//HGAPI.getPlugin().getLogger().warning("Not a valid add-on: " + aclass.getSimpleName());
-				}else{
+				if (object instanceof Addon) {
 				Addon a = (Addon) object;	
 				//a.onLoad();
 				Addons.add(a);
 				}
 			} catch (Exception ex) {
-				HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + name + " to fail to load!");
-				ex.printStackTrace();
+				//HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + name + " to fail to load!");
+				//ex.printStackTrace();
 			} catch (Error ex) {
-				HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + name + " to fail to load!");
-				ex.printStackTrace();
+				//HGAPI.getPlugin().getLogger().warning("A " + ex.getLocalizedMessage() + " caused " + name + " to fail to load!");
+				//ex.printStackTrace();
 			}
 		}
 

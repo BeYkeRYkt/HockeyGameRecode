@@ -279,6 +279,7 @@ public class Arena{
 			float yaw = player.getBukkitPlayer().getLocation().getYaw();
 			
 		player.getBukkitPlayer().teleport(getSecondTeamLobbyLocation());
+		
 		getSecondTeam().getMembers().add(player);
 		}
 		
@@ -329,17 +330,9 @@ public class Arena{
 		}
 		
 		broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName());
-			
-		if(isRunning()){
-		if(getPlayers().size() < 2){
+
+		if(getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
 			stopArena();
-		}
-		}else if(!isRunning()){
-		if(getPlayers().size() < 2){
-			if(getCountToStartRunnable() != null){
-			getCountToStartRunnable().cancel();
-			}
-		}
 		}
 		
 		}
@@ -397,43 +390,74 @@ public class Arena{
 	}
 
 	private void startPlayMusic() {	
-		StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation());
-		Bukkit.getPluginManager().callEvent(event);
-		
-		if(!event.isCancelled()){
 		Random random = new Random();
 		int amount = random.nextInt(9);
 		
 		if(amount == 0){
-			event.setRecord(Material.RECORD_3);
+			StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_3);
+			Bukkit.getPluginManager().callEvent(event);
+			
+			if(!event.isCancelled()){
 			getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+			}
+			
 			}else if(amount == 1){
-				event.setRecord(Material.RECORD_4);
-				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord() );
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_4);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 			}else if(amount == 2){
-				event.setRecord(Material.RECORD_5);
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_5);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
 				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 			}else if(amount == 3){
-				event.setRecord(Material.RECORD_6);
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_6);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
 				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 			}else if(amount == 4){
-				event.setRecord(Material.RECORD_7);
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_7);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
 				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 	        }else if(amount == 5){
-				event.setRecord(Material.RECORD_8);
-	        	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_8);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 		    }else if(amount == 6){
-				event.setRecord(Material.RECORD_9);
-		    	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_9);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 	        }else if(amount == 7){
-				event.setRecord(Material.RECORD_10);
-	        	getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_10);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 	        }else if(amount == 8){
-				event.setRecord(Material.RECORD_12);
-	        	getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, event.getRecord());
+				StartPlayMusicEvent event = new StartPlayMusicEvent(this, getPuckLocation(), Material.RECORD_12);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(!event.isCancelled()){
+				getWorld().playEffect(event.getLocation(), Effect.RECORD_PLAY, event.getRecord());
+				}
 	        }
-		
-		}
 	}
 
 	public Team getTeam(String teamName) {
@@ -466,6 +490,7 @@ public class Arena{
 	   
 	   this.countrunnable = new CountToStartRunnable(this);
 	   getCountToStartRunnable().runTaskTimer(HGAPI.getPlugin(), 0, 20);
+	   
 	}
 		
 	public Puck getPuckEntity(){
@@ -528,8 +553,8 @@ public class Arena{
 	public void startRewards(){
 		   //Rewards
 				if(getFirstTeamScores() > getSecondTeamScores()){
-					HGAPI.sendMessageAll(ChatColor.GOLD + getFirstTeam().getName() + Lang.TEAM_WIN.toString(), true);
-					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores(), true);
+					broadcastMessage(ChatColor.GOLD + getFirstTeam().getName() + Lang.TEAM_WIN.toString());
+					broadcastMessage(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores());
 					
 					for(HockeyPlayer player: getFirstTeam().getMembers()){
 						HGAPI.spawnRandomFirework(getWorld(), player.getBukkitPlayer().getLocation());
@@ -538,8 +563,8 @@ public class Arena{
 					setWinnerTeam(getFirstTeam());
 					setLoserTeam(getSecondTeam());
 				}else if(getFirstTeamScores() < getSecondTeamScores()){
-					HGAPI.sendMessageAll(ChatColor.GOLD + getSecondTeam().getName() + Lang.TEAM_WIN.toString(), true);
-					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores(), true);
+					broadcastMessage(ChatColor.GOLD + getSecondTeam().getName() + Lang.TEAM_WIN.toString());
+					broadcastMessage(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE + getSecondTeamScores());
 					
 					for(HockeyPlayer player: getSecondTeam().getMembers()){
 						HGAPI.spawnRandomFirework(getWorld(), player.getBukkitPlayer().getLocation());
@@ -548,8 +573,8 @@ public class Arena{
 					setWinnerTeam(getSecondTeam());
 					setLoserTeam(getFirstTeam());
 				}else if(getFirstTeamScores() == getSecondTeamScores()){
-					HGAPI.sendMessageAll(Lang.TIE.toString(), true);
-					HGAPI.sendMessageAll(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE +getSecondTeamScores(), true);
+					broadcastMessage(Lang.TIE.toString());
+					broadcastMessage(Lang.RESULT.toString() + ChatColor.RED + getFirstTeamScores() + ChatColor.WHITE + " : " + ChatColor.BLUE +getSecondTeamScores());
 				}
 		
 	}
@@ -561,9 +586,10 @@ public class Arena{
 	   if(!event.isCancelled()){
 	   setRunning(false);
 	   
-		if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
+	   if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
 			getWorld().playEffect(getPuckLocation(), Effect.RECORD_PLAY, 0);
-		}
+	   }
+	   
 	   
 	   if(getCountToStartRunnable() != null){
 		   getCountToStartRunnable().cancel();

@@ -1,12 +1,12 @@
-# HockeyGame v2.1 Configuration
+# HockeyGame v2.2 Configuration
 # Have fun :3
 # by BeYkeRYkt
 Enable-updater: true
 Lang: English
 Game:
-  MatchTimer: 60
-  CountToStart: 20
-  MinPlayers: 1
+  MatchTimer: 200
+  CountToStart: 30
+  MinPlayers: 2
   MaxPlayers: 12
   MusicMatch: true
   puck:
@@ -27,5 +27,3 @@ Whitelist-commands:
 - reload
 - kick
 - ban
-AddonTest:
-  test: test

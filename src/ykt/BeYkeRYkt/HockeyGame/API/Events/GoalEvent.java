@@ -31,8 +31,7 @@ public class GoalEvent extends Event{
     public Puck getPuck(){
     	return entity;
     }
-    
-    
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

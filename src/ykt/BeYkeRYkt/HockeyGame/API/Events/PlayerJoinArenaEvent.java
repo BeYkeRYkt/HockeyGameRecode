@@ -32,7 +32,7 @@ public class PlayerJoinArenaEvent extends Event implements Cancellable{
 	public Arena getArena(){
 		return arena;
 	}
-
+	
 	@Override
 	public boolean isCancelled() {
 		return cancel;

@@ -177,12 +177,13 @@ public class GUIListener implements Listener{
 				
 				if(Icons.getLangList().contains(clicked.getItemMeta().getDisplayName())){
 				
+				player.closeInventory();
+					
 				HGAPI.getPlugin().getConfig().set("Lang", ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
 				HGAPI.getPlugin().getConfig().options().copyDefaults(true);
 				HGAPI.getPlugin().saveConfig();
 				HGAPI.getPlugin().getConfig().options().copyDefaults(false);
 				HGAPI.getPlugin().reloadLang();
-				player.closeInventory();
 				HGAPI.sendMessage(player, Lang.PLUGIN_RESTARTED.toString(), true);
 			    }
 
@@ -214,11 +215,11 @@ public class GUIListener implements Listener{
 					Team team = arena.getTeam(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
 					
 				    HockeyPlayer hplayer = new HockeyPlayer(player);
+				    
+					player.closeInventory();
 					
 					arena.joinPlayer(hplayer, team);
 				    HGAPI.playSound(player, player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 1);
-				    
-				    player.closeInventory();
 				}
 
 				//Выбор цвета
@@ -310,7 +311,9 @@ public class GUIListener implements Listener{
 				event.setCancelled(true);
 				if(HGAPI.getArenaManager().getArenas().keySet().contains(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()))){
 					Arena arena = HGAPI.getArenaManager().getArena(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
-
+					
+					player.closeInventory();
+					
 					if(arena.isRunning()){
 					arena.startRewards();
 					arena.stopArena();
@@ -319,8 +322,6 @@ public class GUIListener implements Listener{
 					arena.stopArena();
 					}
 					}
-					
-					player.closeInventory();
 				}
 			}else if(Icons.getAddons().getItemMeta().getDisplayName().equals(name)){
 				event.setCancelled(true);
