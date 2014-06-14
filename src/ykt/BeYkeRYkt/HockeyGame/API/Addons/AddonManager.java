@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
@@ -27,7 +26,6 @@ public class AddonManager {
 
 	public AddonManager(HGAPI api){
 		this.api = api;
-		loadAddonAll();
 	}
 
 	public void loadAddon(Addon addon){
@@ -37,8 +35,10 @@ public class AddonManager {
 	
 	public void enableAddon(Addon addon){
 		
-		addon.onEnable();
 		addon.setEnabled(true);
+		addon.onEnable();
+		
+		if(!addon.isEnabled()) return;
 		addAddonListeners(addon);
 		registerPermission(addon);
 		

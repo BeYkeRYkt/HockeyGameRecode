@@ -10,19 +10,17 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
+
+import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-
-import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 
 public abstract class Addon{
   

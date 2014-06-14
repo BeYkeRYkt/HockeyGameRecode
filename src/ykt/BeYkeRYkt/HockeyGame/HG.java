@@ -95,6 +95,17 @@ public class HG extends JavaPlugin{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
+		
+		File teams = new File(getDataFolder(), "/teams/");
+		if(!teams.exists()){
+			teams.mkdirs();
+		}
+		
+		File arenas = new File(getDataFolder(), "/arenas/");
+		if(!arenas.exists()){
+		    arenas.mkdirs();
+		}
+		
 		this.api = new HGAPI(this);
 		
 		this.hockey = new HockeyCommands();
@@ -107,22 +118,7 @@ public class HG extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
 		getCommand("hockey").setExecutor(hockey);
 		
-		//setupPermissions(); - Removed
-		
-		File teams = new File(api.getPlugin().getDataFolder(), "/teams/");
-		if(teams.exists()){
-		HGAPI.getTeamManager().loadAllTeams();
-		}else{
-			teams.mkdirs();
-		}
-		
-		File arenas = new File(api.getPlugin().getDataFolder(), "/arenas/");
-		if(arenas.exists()){
-		HGAPI.getArenaManager().loadAllArenas();
-		}else{
-			arenas.mkdirs();
-		}
-				
+		//setupPermissions(); - Removed				
 		//mcstats
 		try {
 		   Metrics metrics = new Metrics(this);
@@ -147,17 +143,17 @@ public class HG extends JavaPlugin{
 
 	@Override
 	public void onDisable(){
-		for(Arena arena: HGAPI.getArenaManager().getArenas().values()){
-		//HGAPI.getArenaManager().save(arena);
-		arena.stopArena();
-		}
-
 		 for(Iterator<Addon> it = HGAPI.getAddonManager().getAddons().iterator(); it.hasNext(); ){
 			   Addon addon = it.next();
 			   it.remove();
 			   HGAPI.getAddonManager().removeAddon(addon);
 		 }
 
+		for(Arena arena: HGAPI.getArenaManager().getArenas().values()){
+			//HGAPI.getArenaManager().save(arena);
+			arena.stopArena();
+		}
+		 
 		HandlerList.unregisterAll(this);
 		this.api = null;
 		this.hockey = null;

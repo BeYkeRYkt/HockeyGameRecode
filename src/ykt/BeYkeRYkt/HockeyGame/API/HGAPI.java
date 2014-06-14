@@ -56,8 +56,6 @@ public class HGAPI{
 		this.saver = new PlayerSaver();
 		this.colors = new ArrayList<Color>();
 
-		saver.loadAllPlayers();
-		
 		colors.add(Color.AQUA);
 		colors.add(Color.BLACK);
 		colors.add(Color.BLUE);
@@ -76,6 +74,13 @@ public class HGAPI{
 		colors.add(Color.WHITE);
 		colors.add(Color.YELLOW);
 		this.addons = new AddonManager(this);
+		
+		//Load files
+
+		getItemSaver().loadAllPlayers();
+		getTeamManager().loadAllTeams();
+		getArenaManager().loadAllArenas();
+		getAddonManager().loadAddonAll();
 	}
 	
 	public static ArenaManager getArenaManager(){
