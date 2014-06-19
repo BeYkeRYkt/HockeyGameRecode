@@ -3,7 +3,6 @@ package ykt.BeYkeRYkt.HockeyGame.Listeners;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -28,16 +27,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
-import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.CustomGUIMenu;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
@@ -68,22 +64,6 @@ public class PlayerListener implements Listener{
 		HGAPI.getItemSaver().checkPlayer(player);
 	}
 	
-	
-	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event){
-		final Player player = event.getPlayer();
-		if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
-			//Fix
-			Bukkit.getScheduler().runTaskLaterAsynchronously(HGAPI.getPlugin(), new BukkitRunnable(){
-				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-				@Override
-				public void run() {
-					hp.getArena().leavePlayer(hp);
-				}}, 10);
-		}
-	}
-
-
 	@EventHandler
 	public void onPlayerGameMode(PlayerGameModeChangeEvent event){
 		Player player = event.getPlayer();
@@ -92,6 +72,7 @@ public class PlayerListener implements Listener{
 			if(hp.getArena().isRunning()){
 			event.setCancelled(true);
 			}
+		
 		}
 	}
 	
@@ -117,13 +98,10 @@ public class PlayerListener implements Listener{
     		hplayer.getArena().getPlayers().remove(hplayer);
     		hplayer.getTeam().getMembers().remove(hplayer);
     		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
-
-			if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
-				int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
-				if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
-					hplayer.getArena().stopArena();
-				}
-			}
+    		
+    		if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+    			hplayer.getArena().stopArena();
+    		}
 		}
 	}
 	
@@ -170,11 +148,8 @@ public class PlayerListener implements Listener{
 			if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
 			if(player.getItemInHand()!= null){
-			if(!player.getItemInHand().hasItemMeta()) return;
-			if(!player.getItemInHand().getItemMeta().hasDisplayName()) return;
-			if(!player.getItemInHand().getItemMeta().getDisplayName().equals(Lang.HOCKEY_STICK.toString())) return;
-				
-			for(Entity entity: player.getNearbyEntities(0.6, 0.6, 0.6)){ //Old : 2, 2, 2
+			
+			for(Entity entity: player.getNearbyEntities(2, 2, 2)){
 			if(entity instanceof Item){
 
 				Item i = (Item) entity;
@@ -190,7 +165,7 @@ public class PlayerListener implements Listener{
 					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Winger");
 					
 					if(player.isSprinting()){
-		    		   beat = speedbonus + beat;
+		    		   beat = speedbonus * beat;
 					}
 		    			 
 		    		 if(player.isSneaking()){		    
@@ -201,7 +176,7 @@ public class PlayerListener implements Listener{
 					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Defender");
 					
 					if(player.isSprinting()){
-		    		   beat = speedbonus + beat;
+		    		   beat = speedbonus * beat;
 					}
 		    			 
 		    		 if(player.isSneaking()){		    
@@ -211,7 +186,7 @@ public class PlayerListener implements Listener{
 					beat = HGAPI.getPlugin().getConfig().getDouble("Game.PowerBeat.Goalkeeper");
 					
 					if(player.isSprinting()){
-		    		   beat = speedbonus + beat;
+		    		   beat = speedbonus * beat;
 					}
 		    			 
 		    		 if(player.isSneaking()){		    
@@ -227,8 +202,6 @@ public class PlayerListener implements Listener{
 			}
 			}
 		}
-		}else if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK ){
-			//TODO: I'M STRONG!
 		}
 	}
 	
@@ -303,27 +276,14 @@ public class PlayerListener implements Listener{
 	Player player = event.getPlayer();
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-		//if(hp.getArena().isRunning()){
-		event.setCancelled(true); // For lobby
-		//}
-	}
-	
-	//for other's players not playing hockey
-	for(String name: HGAPI.getArenaManager().getArenas().keySet()){
-
-		Arena arena = HGAPI.getArenaManager().getArena(name);
-		if(arena.getPuckEntity() != null){		
-		if(event.getItem().getEntityId() == arena.getPuckEntity().getItem().getEntityId()){
-			event.setCancelled(true);
-		}
+		if(hp.getArena().isRunning()){
+		event.setCancelled(true);
 		}
 	}
-	
   }
 	    
 	@EventHandler
 	public void onPlayerDamage(EntityDamageEvent event) {
-		if(!HGAPI.checkOldMCVersion()){
 		Entity target = event.getEntity();
 		if(target instanceof Player){
 		Player player = (Player) target;
@@ -334,7 +294,6 @@ public class PlayerListener implements Listener{
         }
 		}
 		}
-		}
   }
 	
 	@EventHandler
@@ -342,9 +301,9 @@ public class PlayerListener implements Listener{
 	Player player = event.getPlayer();
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
-		//if(hp.getArena().isRunning()){
-		event.setCancelled(true); //for lobby
-		//}
+		if(hp.getArena().isRunning()){
+		event.setCancelled(true);
+		}
 	}
   }
 
@@ -402,10 +361,7 @@ public class PlayerListener implements Listener{
 		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
 		
 		if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
-			int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
-			if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
-				hplayer.getArena().stopArena();
-			}
+			hplayer.getArena().stopArena();
 		}
 		
 		}
@@ -414,7 +370,6 @@ public class PlayerListener implements Listener{
 	
 	@EventHandler
 	  public void onDamagePlayers(EntityDamageByEntityEvent event) {
-		if(!HGAPI.checkOldMCVersion()){
 		Entity target = event.getEntity();
 		if(target instanceof Player){
 		Player player = (Player) target;
@@ -423,7 +378,6 @@ public class PlayerListener implements Listener{
         if(player.getHealth() < 4){
 	    player.setHealth(4);
         }
-		}
 		}
 		}
 	}

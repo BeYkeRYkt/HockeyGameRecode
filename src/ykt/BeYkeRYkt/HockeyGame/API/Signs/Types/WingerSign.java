@@ -45,13 +45,11 @@ public class WingerSign implements SignType{
 	    if(type != null){
 			HockeyPlayer player = api.getPlayerManager().getHockeyPlayer(event.getPlayer().getName());
 	    	if(player != null){
-	    		if(player.getTeam().getWingers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MaxWingers")){
+	    		if(player.getTeam().getWingers().size() < 3){
 	    		if(player.getType() != null && !player.getType().getName().equals(type.getName())){
 		    	   //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CHANGE_CLASS.toString());
 		    	   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString(), false);
-	    		   if(!HGAPI.checkOldMCVersion()){
-		    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
-		    		   }
+	    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
 	    		   player.getBukkitPlayer().getInventory().clear();
 	    		   player.getBukkitPlayer().updateInventory();
 	    		   
@@ -69,9 +67,7 @@ public class WingerSign implements SignType{
 	    		}else if(player.getType() == null){
 		    		   //player.getBukkitPlayer().sendMessage(Lang.TITLE.toString() + Lang.CHANGE_CLASS.toString());
 		    		   HGAPI.sendMessage(player.getBukkitPlayer(), Lang.CHANGE_CLASS.toString(), false);
-		    		   if(!HGAPI.checkOldMCVersion()){
-			    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
-			    		   }
+		    		   HGAPI.playSound(player.getBukkitPlayer(), player.getBukkitPlayer().getLocation(), Sound.HORSE_ARMOR, 1, 1);
 		    		   player.getBukkitPlayer().getInventory().clear();
 		    		   player.getBukkitPlayer().updateInventory();
 		    		   player.setType(type);

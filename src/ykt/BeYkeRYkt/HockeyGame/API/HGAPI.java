@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
@@ -42,21 +41,9 @@ public class HGAPI{
 	private static PlayerSaver saver;
 	private static List<Color> colors;
 	private static AddonManager addons;
-    private String version = null;
-	private static boolean old = false;
 	
 	public HGAPI(HG plugin){
 		this.plugin = plugin;
-		
-    	this.version = Bukkit.getBukkitVersion();
-	    this.version = this.version.substring(0, 6);
-	    this.version = this.version.replaceAll("-", "");
-		
-	    if(this.version.startsWith("1.5.2")){
-    		this.old = true;
-    		Bukkit.getConsoleSender().sendMessage(Lang.TITLE.toString() + ChatColor.RED + "Plugin goes into compatibility mode 1.5.2. Some features may be unavailable.");
-    	}
-	    
 		init();
 	}
 	
@@ -94,10 +81,6 @@ public class HGAPI{
 		getTeamManager().loadAllTeams();
 		getArenaManager().loadAllArenas();
 		getAddonManager().loadAddonAll();
-	}
-	
-	public static boolean checkOldMCVersion(){
-		return old;
 	}
 	
 	public static ArenaManager getArenaManager(){

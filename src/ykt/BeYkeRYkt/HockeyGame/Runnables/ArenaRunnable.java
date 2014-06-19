@@ -110,11 +110,6 @@ public class ArenaRunnable extends BukkitRunnable{
 			arena.stopArena();
 		}
 		
-		//Autobalance
-		if(HGAPI.getPlugin().getConfig().getBoolean("Game.AutoBalance")){
-		arena.autobalance();
-		}
-		
 		seconds--;
 	}
 	
