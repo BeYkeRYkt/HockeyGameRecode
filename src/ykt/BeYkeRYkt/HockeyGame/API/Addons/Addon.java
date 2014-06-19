@@ -82,14 +82,14 @@ public abstract class Addon{
         }
         
         final YamlConfiguration defConfig;
-        //1.5.2
+        //1.5.2 and 1.6
         if(HGAPI.checkOldMCVersion()){
             if (defConfigStream != null) {
                 defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 
                 newConfig.setDefaults(defConfig);
             }
-         // 1.5.2  >
+         // 1.5.2 and 1.6 >
         }else if(!HGAPI.checkOldMCVersion()){
         
         if(FileConfiguration.UTF8_OVERRIDE) {

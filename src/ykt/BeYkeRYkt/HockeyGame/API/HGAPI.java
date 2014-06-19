@@ -52,9 +52,12 @@ public class HGAPI{
 	    this.version = this.version.substring(0, 6);
 	    this.version = this.version.replaceAll("-", "");
 		
-	    if(this.version.startsWith("1.5.2")){
+	    if(this.version.startsWith("1.5")){
     		this.old = true;
-    		Bukkit.getConsoleSender().sendMessage(Lang.TITLE.toString() + ChatColor.RED + "Plugin goes into compatibility mode 1.5.2. Some features may be unavailable.");
+    		Bukkit.getConsoleSender().sendMessage(Lang.TITLE.toString() + ChatColor.RED + "Plugin goes into compatibility mode 1.5. Some features may be unavailable.");
+    	}else if(this.version.startsWith("1.6")){
+    		this.old = true;	
+    		Bukkit.getConsoleSender().sendMessage(Lang.TITLE.toString() + ChatColor.RED + "Plugin goes into compatibility mode 1.6. Some features may be unavailable.");
     	}
 	    
 		init();
@@ -99,7 +102,7 @@ public class HGAPI{
 	public static boolean checkOldMCVersion(){
 		return old;
 	}
-	
+
 	public static ArenaManager getArenaManager(){
 		return arena;
 	}
