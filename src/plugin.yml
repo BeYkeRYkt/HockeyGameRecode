@@ -2,7 +2,7 @@ name: HockeyGame
 main: ykt.BeYkeRYkt.HockeyGame.HG
 description: Plugin for players :D
 author: BeYkeRYkt
-version: 2.3
+version: 2.4
 commands:
   hockey:
     description: Main commands

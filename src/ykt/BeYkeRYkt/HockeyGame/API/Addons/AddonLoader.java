@@ -57,11 +57,11 @@ public class AddonLoader {
 
 			if (!file.getName().endsWith(".class")) {
 				if (!file.getName().endsWith(".jar")) {
-					HGAPI.getPlugin().getServer().getConsoleSender().sendMessage(ChatColor.RED + file.getName() + " :Unknown format.");
+					//HGAPI.getPlugin().getServer().getConsoleSender().sendMessage(ChatColor.RED + file.getName() + " :Unknown format.");
 					lastnameoa = "";
 					continue;
 				}else{
-					HGAPI.getPlugin().getLogger().info("FOUND A JAR!");
+					//HGAPI.getPlugin().getLogger().info("FOUND A JAR!");
 					try{
 		                JarFile jarFile = new JarFile(file.getAbsolutePath());
 

@@ -80,9 +80,19 @@ public abstract class Addon{
         if (defConfigStream == null) {
             return;
         }
-
+        
         final YamlConfiguration defConfig;
-        if (FileConfiguration.UTF8_OVERRIDE) {
+        //1.5.2
+        if(HGAPI.checkOldMCVersion()){
+            if (defConfigStream != null) {
+                defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+
+                newConfig.setDefaults(defConfig);
+            }
+         // 1.5.2  >
+        }else if(!HGAPI.checkOldMCVersion()){
+        
+        if(FileConfiguration.UTF8_OVERRIDE) {
             defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8));
         } else {
             final byte[] contents;
@@ -106,6 +116,7 @@ public abstract class Addon{
             }
         }
         newConfig.setDefaults(defConfig);
+        }
     }
 
 	//Bukkit

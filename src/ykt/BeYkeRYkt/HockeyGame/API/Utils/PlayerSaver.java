@@ -101,7 +101,11 @@ public class PlayerSaver{
 			if (itemInInv != null) if (itemInInv.getType() != Material.AIR) getPlayerConfig(player.getName()).set("Item " + i, itemInInv);
 	  }
 		
-      getPlayerConfig(player.getName()).set("Health", player.getHealth());
+	  if(!HGAPI.checkOldMCVersion()){
+	  getPlayerConfig(player.getName()).set("Health", player.getHealth());
+	  }else{
+	  //getPlayerConfig(player.getName()).set("Health", player.getHealth()); //ERRORS
+	  }
       getPlayerConfig(player.getName()).set("Food", player.getFoodLevel());
       getPlayerConfig(player.getName()).set("Gamemode", player.getGameMode().name());
       getPlayerConfig(player.getName()).set("Location.World", player.getWorld().getName());
@@ -127,7 +131,9 @@ public class PlayerSaver{
 		}
 		p.getInventory().setArmorContents(invArmors);
     	 
-		int invSize = 27;
+		//int invSize = 27;
+		//Fix
+		int invSize = 36;
 		ItemStack[] invContents = new ItemStack[invSize];
 		 for (int i = 0; i < invSize; i++) {
 			if (getPlayerConfig(p.getName()).contains("Item " + i)) invContents[i] = getPlayerConfig(p.getName()).getItemStack("Item " + i);
@@ -147,8 +153,13 @@ public class PlayerSaver{
     	 
 		 p.teleport(loc);
 		 
-		 double health = getPlayerConfig(p.getName()).getInt("Health");
-		 p.setHealth(health);
+		 if(!HGAPI.checkOldMCVersion()){
+			 double health = getPlayerConfig(p.getName()).getDouble("Health");
+			 p.setHealth(health);
+		 }else{
+		     //int health = getPlayerConfig(p.getName()).getInt("Health"); - ERRORS
+		     //p.setHealth(health); - ERRORS
+		 }
 		 
 		 int food = getPlayerConfig(p.getName()).getInt("Food");
 		 p.setFoodLevel(food);
