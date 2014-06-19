@@ -15,6 +15,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStartEvent;
@@ -25,6 +27,7 @@ import ykt.BeYkeRYkt.HockeyGame.API.Events.RespawnPuckEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.StartPlayMusicEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
+import ykt.BeYkeRYkt.HockeyGame.API.Utils.ItemGiver;
 import ykt.BeYkeRYkt.HockeyGame.API.Utils.Lang;
 import ykt.BeYkeRYkt.HockeyGame.Runnables.ArenaRunnable;
 import ykt.BeYkeRYkt.HockeyGame.Runnables.CountToStartRunnable;
@@ -267,23 +270,24 @@ public class Arena{
 		player.setTeam(team);
 				
 		if(this.getFirstTeam().getName().equals(team.getName())){
-			
-		float pitch = player.getBukkitPlayer().getLocation().getPitch();
-		float yaw = player.getBukkitPlayer().getLocation().getYaw();
-		
+
 		player.getBukkitPlayer().teleport(getFirstTeamLobbyLocation());
 		
 		getFirstTeam().getMembers().add(player);
 		}else if(this.getSecondTeam().getName().equals(team.getName())){
-			float pitch = player.getBukkitPlayer().getLocation().getPitch();
-			float yaw = player.getBukkitPlayer().getLocation().getYaw();
-			
+
 		player.getBukkitPlayer().teleport(getSecondTeamLobbyLocation());
 		
 		getSecondTeam().getMembers().add(player);
 		}
 		
+		if(HGAPI.checkOldMCVersion()){
+		//player.getBukkitPlayer().setHealth(20); - ERRORS
+		player.getBukkitPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 4, 20));
+		}else if(!HGAPI.checkOldMCVersion()){
 		player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+		}
+		
 		player.getBukkitPlayer().setFoodLevel(20);
 		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
 		
@@ -332,7 +336,10 @@ public class Arena{
 		broadcastMessage(ChatColor.YELLOW + player.getName() + Lang.PLAYER_LEAVE_ARENA.toString() + ChatColor.GREEN + getName());
 
 		if(getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+			int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
+			if(getFirstTeam().getMembers().size() < min || getSecondTeam().getMembers().size() < min){
 			stopArena();
+			}
 		}
 		
 		}
@@ -378,9 +385,14 @@ public class Arena{
 			startMainRunnable(puck);
 			
 			if(getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+				int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
+				if(getFirstTeam().getMembers().size() < min || getSecondTeam().getMembers().size() < min){
 				stopArena();
 				return;
+				}
 			}
+			
+			//autobalance();
 			
 			if(HGAPI.getPlugin().getConfig().getBoolean("Game.MusicMatch")){
 				startPlayMusic();
@@ -388,7 +400,215 @@ public class Arena{
 			
 		}
 	}
+	
+	//AutoBalance
+	//Original Source code: https://github.com/Razz0991/Minigames/blob/master/Minigames/com/pauldavdesign/mineauz/minigames/scoring/CTFType.java
+	public void autobalance(){
+		for(int i = 0; getPlayers().size() > i; i++){
+			int team = -1;
+			if(getSecondTeam().getMembers().contains(players.get(i))){
+				team = 1;
+			}
+			else if(getFirstTeam().getMembers().contains(players.get(i))){
+				team = 0;
+			}
+			if(team == 1){
+				if(getFirstTeam().getMembers().size() < getSecondTeam().getMembers().size() - 1){
+					//leavePlayer(players.get(i)); - NOT BALANCED
+					//joinPlayer(players.get(i) , getFirstTeam());
+					
+					//Leave
+					HockeyPlayer player = getPlayers().get(i);
+					player.getBukkitPlayer().getInventory().clear();
+					player.getBukkitPlayer().getInventory().setArmorContents(null);
+					player.getBukkitPlayer().updateInventory();
+					
+						if(player.getTeam().getWingers().contains(player)){
+							player.getTeam().removeWinger(player);
+						}else if(player.getTeam().getDefends().contains(player)){
+							player.getTeam().removeDefend(player);
+						}else if(player.getTeam().getGoalKeeper().equals(player)){
+							player.getTeam().removeGoalkeeper();
+						}
+					
+					player.getTeam().getMembers().remove(player);
+					
+					//Join
+					getFirstTeam().getMembers().add(player);
+					player.setTeam(getFirstTeam());
+					
+					if(player.getType().getName().equals("Winger")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Defender")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Goalkeeper")){
+						if(player.getTeam().getGoalKeeper() == null){
+						player.getTeam().setGoalkeeper(player);
+						}else{
+							player.getBukkitPlayer().getInventory().clear();
+							player.getBukkitPlayer().getInventory().setArmorContents(null);
+							player.getBukkitPlayer().updateInventory();
+							player.setType(HGAPI.getClassManager().getClass("Winger"));
+						}
+					}
+					
+					ItemGiver.setItems(player, player.getTeam().getColor());
+					Location location = getFirstTeamSpawnLocation().clone();
+		        	location.setPitch(player.getBukkitPlayer().getLocation().getPitch());
+		        	location.setYaw(player.getBukkitPlayer().getLocation().getYaw());
+					player.getBukkitPlayer().teleport(location);
 
+					team = 0;
+				}
+			}else if(team == 0){
+				if(getSecondTeam().getMembers().size() < getFirstTeam().getMembers().size() - 1){
+					//leavePlayer(players.get(i));
+					//joinPlayer(players.get(i) , getSecondTeam());
+					
+					//Leave
+					HockeyPlayer player = getPlayers().get(i);
+					player.getBukkitPlayer().getInventory().clear();
+					player.getBukkitPlayer().getInventory().setArmorContents(null);
+					player.getBukkitPlayer().updateInventory();
+					
+					if(player.getType() != null){
+						if(player.getTeam().getWingers().contains(player)){
+							player.getTeam().removeWinger(player);
+						}else if(player.getTeam().getDefends().contains(player)){
+							player.getTeam().removeDefend(player);
+						}else if(player.getTeam().getGoalKeeper().equals(player)){
+							player.getTeam().removeGoalkeeper();
+						}
+					}
+					player.getTeam().getMembers().remove(player);
+					
+					//Join
+					getSecondTeam().getMembers().add(player);
+					player.setTeam(getSecondTeam());
+					
+					if(player.getType().getName().equals("Winger")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Defender")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Goalkeeper")){
+						if(player.getTeam().getGoalKeeper() == null){
+						player.getTeam().setGoalkeeper(player);
+						}else{
+							player.getBukkitPlayer().getInventory().clear();
+							player.getBukkitPlayer().getInventory().setArmorContents(null);
+							player.getBukkitPlayer().updateInventory();
+							player.setType(HGAPI.getClassManager().getClass("Winger"));
+						}
+					}
+					
+					ItemGiver.setItems(player, player.getTeam().getColor());
+					Location location = getSecondTeamSpawnLocation().clone();
+		        	location.setPitch(player.getBukkitPlayer().getLocation().getPitch());
+		        	location.setYaw(player.getBukkitPlayer().getLocation().getYaw());
+					player.getBukkitPlayer().teleport(location);
+					
+					team = 1;
+				}
+			}else{
+				if(getFirstTeam().getMembers().size() < getSecondTeam().getMembers().size() - 1){
+					//leavePlayer(players.get(i));
+					//joinPlayer(players.get(i) , getFirstTeam());
+					
+					//Leave
+					HockeyPlayer player = getPlayers().get(i);
+					player.getBukkitPlayer().getInventory().clear();
+					player.getBukkitPlayer().getInventory().setArmorContents(null);
+					player.getBukkitPlayer().updateInventory();
+					
+					if(player.getType() != null){
+						if(player.getTeam().getWingers().contains(player)){
+							player.getTeam().removeWinger(player);
+						}else if(player.getTeam().getDefends().contains(player)){
+							player.getTeam().removeDefend(player);
+						}else if(player.getTeam().getGoalKeeper().equals(player)){
+							player.getTeam().removeGoalkeeper();
+						}
+					}
+					player.getTeam().getMembers().remove(player);
+					
+					//Join
+					getFirstTeam().getMembers().add(player);
+					player.setTeam(getFirstTeam());
+					
+					if(player.getType().getName().equals("Winger")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Defender")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Goalkeeper")){
+						if(player.getTeam().getGoalKeeper() == null){
+						player.getTeam().setGoalkeeper(player);
+						}else{
+							player.getBukkitPlayer().getInventory().clear();
+							player.getBukkitPlayer().getInventory().setArmorContents(null);
+							player.getBukkitPlayer().updateInventory();
+							player.setType(HGAPI.getClassManager().getClass("Winger"));
+						}
+					}
+					
+					ItemGiver.setItems(player, player.getTeam().getColor());
+					Location location = getFirstTeamSpawnLocation().clone();
+		        	location.setPitch(player.getBukkitPlayer().getLocation().getPitch());
+		        	location.setYaw(player.getBukkitPlayer().getLocation().getYaw());
+					player.getBukkitPlayer().teleport(location);
+					
+					team = 0;
+				}else if(getSecondTeam().getMembers().size() < getFirstTeam().getMembers().size() - 1){
+					//leavePlayer(players.get(i));
+					//joinPlayer(players.get(i) , getSecondTeam());
+					
+					//Leave
+					HockeyPlayer player = getPlayers().get(i);
+					player.getBukkitPlayer().getInventory().clear();
+					player.getBukkitPlayer().getInventory().setArmorContents(null);
+					player.getBukkitPlayer().updateInventory();
+					
+					if(player.getType() != null){
+						if(player.getTeam().getWingers().contains(player)){
+							player.getTeam().removeWinger(player);
+						}else if(player.getTeam().getDefends().contains(player)){
+							player.getTeam().removeDefend(player);
+						}else if(player.getTeam().getGoalKeeper().equals(player)){
+							player.getTeam().removeGoalkeeper();
+						}
+					}
+					player.getTeam().getMembers().remove(player);
+					
+					//Join
+					getSecondTeam().getMembers().add(player);
+					player.setTeam(getSecondTeam());
+					
+					if(player.getType().getName().equals("Winger")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Defender")){
+						player.getTeam().addDefend(player);
+					}else if(player.getType().getName().equals("Goalkeeper")){
+						if(player.getTeam().getGoalKeeper() == null){
+						player.getTeam().setGoalkeeper(player);
+						}else{
+							player.getBukkitPlayer().getInventory().clear();
+							player.getBukkitPlayer().getInventory().setArmorContents(null);
+							player.getBukkitPlayer().updateInventory();
+							player.setType(HGAPI.getClassManager().getClass("Winger"));
+						}
+					}
+					
+					ItemGiver.setItems(player, player.getTeam().getColor());
+					Location location = getSecondTeamSpawnLocation().clone();
+		        	location.setPitch(player.getBukkitPlayer().getLocation().getPitch());
+		        	location.setYaw(player.getBukkitPlayer().getLocation().getYaw());
+					player.getBukkitPlayer().teleport(location);
+					
+					team = 1;
+				}
+			}
+		}
+	}
+	
 	private void startPlayMusic() {	
 		Random random = new Random();
 		int amount = random.nextInt(9);

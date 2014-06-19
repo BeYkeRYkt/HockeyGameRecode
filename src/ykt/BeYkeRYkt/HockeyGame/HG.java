@@ -1,8 +1,10 @@
 package ykt.BeYkeRYkt.HockeyGame;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,6 +50,64 @@ public class HG extends JavaPlugin{
 	public void onEnable(){
 		//Hello peoples! I'm recorded plugin by BeYkeRYkt :D
 		
+		//Creating and checking config
+		createConfig(false);
+		checkConfig();
+		
+		File teams = new File(getDataFolder(), "/teams/");
+		if(!teams.exists()){
+			teams.mkdirs();
+		}
+		
+		File arenas = new File(getDataFolder(), "/arenas/");
+		if(!arenas.exists()){
+		    arenas.mkdirs();
+		}
+		
+		initLangDir();
+		
+		this.lang = getConfig().getString("Lang");
+		
+		loadLang();
+		
+		this.api = new HGAPI(this);
+		
+		this.hockey = new HockeyCommands();
+		
+		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+		Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
+		getCommand("hockey").setExecutor(hockey);
+		
+		//setupPermissions(); - Removed	
+		
+		//mcstats
+		try {
+		   Metrics metrics = new Metrics(this);
+		   metrics.start();
+		} catch (IOException e) {
+		   // Failed to submit the stats :-(
+		}
+		
+		
+		//Update
+		if(this.getConfig().getBoolean("Enable-updater")){
+			this.getLogger().info("Enabling update system...");
+			new UpdateContainer(this.getFile());
+		}
+	}
+	
+	
+	private void createConfig(boolean recreate) {
+		
+		//REMOVED!
+		//if(recreate){
+			//File file = new File(getDataFolder(), "config.yml");
+			//if (!file.exists()) {
+				//file.delete();
+			//}
+		//}
+		
 		PluginDescriptionFile pdfFile = this.getDescription();
 		try {
 			FileConfiguration fc = getConfig();
@@ -58,10 +118,13 @@ public class HG extends JavaPlugin{
 								+ "\nby BeYkeRYkt");
 				fc.addDefault("Enable-updater", true);
 				fc.addDefault("Lang", "English");
+				fc.addDefault("Game.AutoBalance", false);
 				fc.addDefault("Game.MatchTimer", 200);
 				fc.addDefault("Game.CountToStart", 30);
 				fc.addDefault("Game.MinPlayers", 2);
 				fc.addDefault("Game.MaxPlayers", 12);
+				fc.addDefault("Game.MaxWingers", 3);
+				fc.addDefault("Game.MaxDefenders", 2);
 				fc.addDefault("Game.MusicMatch", true);
 				fc.addDefault("Game.puck.material", "RECORD_7");
 				fc.addDefault("Game.PowerBeat.Winger", 0.6);
@@ -91,50 +154,163 @@ public class HG extends JavaPlugin{
 				fc.options().copyDefaults(true);
 				saveConfig();
 				fc.options().copyDefaults(false);
+				
+				//Lang fix
+				this.lang = "English";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-		
-		File teams = new File(getDataFolder(), "/teams/");
-		if(!teams.exists()){
-			teams.mkdirs();
+	}
+
+
+	private void checkConfig() {
+		boolean save = false;
+		if(getConfig().get("Enable-updater") == null){
+			getConfig().set("Enable-updater", true);
+			save = true;
 		}
 		
-		File arenas = new File(getDataFolder(), "/arenas/");
-		if(!arenas.exists()){
-		    arenas.mkdirs();
+		if(getConfig().getString("Lang") == null){
+			getConfig().set("Lang", "English");
+			save = true;
 		}
 		
-		this.api = new HGAPI(this);
-		
-		this.hockey = new HockeyCommands();
-		
-		this.lang = getConfig().getString("Lang");
-		
-		loadLang();
-		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
-		Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
-		getCommand("hockey").setExecutor(hockey);
-		
-		//setupPermissions(); - Removed				
-		//mcstats
-		try {
-		   Metrics metrics = new Metrics(this);
-		   metrics.start();
-		} catch (IOException e) {
-		   // Failed to submit the stats :-(
+		if(getConfig().get("Game.AutoBalance") == null){
+			getConfig().set("Game.AutoBalance", false);
+			save = true;
 		}
 		
+		if(getConfig().get("Game.MatchTimer") == null){
+			getConfig().set("Game.MatchTimer", 200);
+			save = true;
+		}
 		
-		//Update
-		if(this.getConfig().getBoolean("Enable-updater")){
-			this.getLogger().info("Enabling update system...");
-			new UpdateContainer(this.getFile());
+		if(getConfig().get("Game.CountToStart") == null){
+			getConfig().set("Game.CountToStart", 30);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.MinPlayers") == null){
+			getConfig().set("Game.MinPlayers", 2);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.MaxPlayers") == null){
+			getConfig().set("Game.MaxPlayers", 12);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.MaxWingers") == null){
+			getConfig().set("Game.MaxWingers", 3);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.MaxDefenders") == null){
+			getConfig().set("Game.MaxDefenders", 3);
+			save = true;
+		}
+		
+		if(!getConfig().getBoolean("Game.MusicMatch")){
+			getConfig().set("Game.MusicMatch", true);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.puck.material") == null){
+			getConfig().set("Game.puck.material", "RECORD_7");
+			save = true;
+		}
+		
+		if(getConfig().get("Game.PowerBeat.Winger") == null){
+			getConfig().set("Game.PowerBeat.Winger", 0.6);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.PowerBeat.Defender") == null){
+			getConfig().set("Game.PowerBeat.Defender", 0.4);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.PowerBeat.Goalkeeper") == null){
+			getConfig().set("Game.PowerBeat.Goalkeeper", 0.3);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.Rewards.Winners") == null){
+			List<String> win = new ArrayList<String>();
+			win.add("266:3");
+			win.add("264:1");
+
+			getConfig().set("Game.Rewards.Winners", win);
+			save = true;
+		}
+		
+		if(getConfig().get("Game.Rewards.Losers") == null){
+			List<String> loss = new ArrayList<String>();
+			loss.add("1:1");
+
+			getConfig().set("Game.Rewards.Losers", loss);
+			save = true;
+		}
+		
+		if(getConfig().get("Whitelist-commands") == null){
+		List<String> list = new ArrayList<String>();
+		list.add("hockey");
+		list.add("msg");
+		list.add("reload");
+		list.add("kick");
+		list.add("ban");
+		
+		getConfig().set("Whitelist-commands", list);
+		save = true;
+		}
+		
+		if(save){
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		getConfig().options().copyDefaults(false);
 		}
 	}
-	
+
+
+	//Original code by cnaude: https://github.com/cnaude/Scavenger/blob/master/src/main/java/com/cnaude/scavenger/ScavengerConfig.java
+	private void initLangDir() {
+		File dataFolder = new File(getDataFolder() + "/lang/");
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
+
+        ArrayList<String> langFiles = new ArrayList();
+        langFiles.add("English.yml");
+        langFiles.add("Russian.yml");
+        langFiles.add("Portuguese.yml");
+        langFiles.add("German.yml");
+        
+
+        for (String fName : langFiles) {
+            File file = new File(getDataFolder() + "/lang/" + fName);
+            if (!file.exists()) {
+                try {
+                    InputStream in = getResource("lang/" + fName);
+                    //byte[] buf = new byte[1024];
+                    //int len;
+                    //try (OutputStream out = new FileOutputStream(file)) {
+                        //while ((len = in.read(buf)) > 0) {
+                           //out.write(buf, 0, len);
+                        //}
+                    //}
+    	            if (in != null) {
+	                YamlConfiguration config = YamlConfiguration.loadConfiguration(in);
+	                config.save(file);
+    	            }
+	                
+                } catch (IOException ex) {
+                   getLogger().info(ex.getMessage());
+                }
+            }
+        }
+	}
+
 	private void setupPermissions() {
 		Bukkit.getPluginManager().addPermission(new Permission("hg.setup", PermissionDefault.FALSE));
 		Bukkit.getPluginManager().addPermission(new Permission("hg.admin", PermissionDefault.FALSE));
@@ -154,6 +330,9 @@ public class HG extends JavaPlugin{
 			arena.stopArena();
 		}
 		 
+
+		reloadConfig(); //fix
+		
 		HandlerList.unregisterAll(this);
 		this.api = null;
 		this.hockey = null;

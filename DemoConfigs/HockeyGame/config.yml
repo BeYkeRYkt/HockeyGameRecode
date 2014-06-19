@@ -1,13 +1,16 @@
-# HockeyGame v2.2 Configuration
+# HockeyGame v2.4 Configuration
 # Have fun :3
 # by BeYkeRYkt
 Enable-updater: true
-Lang: English
+Lang: Russian
 Game:
+  AutoBalance: false
   MatchTimer: 200
   CountToStart: 30
   MinPlayers: 2
   MaxPlayers: 12
+  MaxWingers: 3
+  MaxDefenders: 2
   MusicMatch: true
   puck:
     material: RECORD_7
