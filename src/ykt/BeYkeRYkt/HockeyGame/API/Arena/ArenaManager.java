@@ -77,7 +77,6 @@ public class ArenaManager{
 	      
 	      String name = fn.replace(".yml", "");
 	      Arena arena = new Arena(name);
-	      arena.setMaxPlayers(12);
 	      
 	      Scanner snr = new Scanner(f);
 
@@ -103,14 +102,26 @@ public class ArenaManager{
 	      //First team
 	      String team1name = snr.nextLine().trim();
 	      HGAPI.getPlugin().getLogger().info("FirstTeam Name: " + team1name);
+	      if(api.getTeamManager().getTeam(team1name) != null){
 	      Team team1 = api.getTeamManager().getTeam(team1name);
-	      arena.setFirstTeam(team1);
+	      //fix teams for arenas
+	      Team teamNew = new Team(team1name);
+	      teamNew.setColor(team1.getColor());
+	      
+	      arena.setFirstTeam(teamNew);
+	      }
 	      
 	      //Second Team
 	      String team2name = snr.nextLine().trim();
 	      HGAPI.getPlugin().getLogger().info("SecondTeam Name: " + team2name);
+	      if(api.getTeamManager().getTeam(team2name) != null){
 	      Team team2 = api.getTeamManager().getTeam(team2name);
-	      arena.setSecondTeam(team2);
+	      //fix teams for arenas
+	      Team teamNew2 = new Team(team2name);
+	      teamNew2.setColor(team2.getColor());
+	      
+	      arena.setSecondTeam(teamNew2);
+	      }
 	      
 	      
 	      

@@ -92,6 +92,23 @@ public class ArenaRunnable extends BukkitRunnable{
 			}
 		}
 		
+		//AutoBalance
+		//int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
+		//if(arena.getFirstTeam().getMembers().size() < min || arena.getSecondTeam().getMembers().size() < min){
+			//arena.stopArena();
+		//}
+		
+		//Autobalance
+		if(HGAPI.getPlugin().getConfig().getBoolean("Game.AutoBalance")){
+		arena.autobalance();
+		}
+		
+		
+		//From: PlayerListener	
+		if(arena.getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+			arena.stopArena();
+		}
+			
 		if(seconds == lastgoalsec && seconds > 5){
 			arena.respawnPuck();
 		}
@@ -105,14 +122,8 @@ public class ArenaRunnable extends BukkitRunnable{
 		}
 		
 		if(seconds == 0){
-
 			arena.startRewards();
 			arena.stopArena();
-		}
-		
-		//Autobalance
-		if(HGAPI.getPlugin().getConfig().getBoolean("Game.AutoBalance")){
-		arena.autobalance();
 		}
 		
 		seconds--;

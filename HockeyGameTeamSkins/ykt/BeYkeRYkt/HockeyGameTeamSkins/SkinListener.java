@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.MatchStartEvent;
+import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerAutobalanceEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 
@@ -34,6 +35,15 @@ public class SkinListener implements Listener{
 			if(type.equalsIgnoreCase("none")) return;
 			TeamSkins.getInstance().getDisguisePlugin().disguisePlayer(players.getBukkitPlayer(), type);
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerAutobalance(PlayerAutobalanceEvent event){
+		HockeyPlayer player = event.getPlayer();
+		if(TeamSkins.getInstance().getConfig().getString("Skins." + player.getTeam().getName()) == null) return;
+		String type = TeamSkins.getInstance().getConfig().getString("Skins." + player.getTeam().getName());
+		if(type.equalsIgnoreCase("none")) return;
+		TeamSkins.getInstance().getDisguisePlugin().disguisePlayer(player.getBukkitPlayer(), type);
 	}
 
 	@EventHandler

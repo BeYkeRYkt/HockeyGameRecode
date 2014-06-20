@@ -30,7 +30,11 @@ public class CountToStartRunnable extends BukkitRunnable{
 				 arena.getCountToStartRunnable().cancel();
 			  }
 		   }
-		
+
+			//From: PlayerListener	
+			if(arena.getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+				arena.stopArena();
+			}
 		
 		if(seconds == 30){
 		    for(HockeyPlayer players: arena.getPlayers()){

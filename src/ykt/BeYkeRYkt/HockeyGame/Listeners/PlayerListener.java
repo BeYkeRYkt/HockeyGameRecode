@@ -37,7 +37,6 @@ import org.bukkit.util.Vector;
 
 import ykt.BeYkeRYkt.HockeyGame.API.HGAPI;
 import ykt.BeYkeRYkt.HockeyGame.API.Arena.Arena;
-import ykt.BeYkeRYkt.HockeyGame.API.Events.PlayerLeaveArenaEvent;
 import ykt.BeYkeRYkt.HockeyGame.API.GUIMenu.CustomGUIMenu;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.HockeyPlayer;
 import ykt.BeYkeRYkt.HockeyGame.API.Team.Team;
@@ -78,7 +77,7 @@ public class PlayerListener implements Listener{
 				HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
 				@Override
 				public void run() {
-					hp.getArena().leavePlayer(hp);
+					hp.getArena().leavePlayer(hp, true);
 				}}, 10);
 		}
 	}
@@ -103,27 +102,30 @@ public class PlayerListener implements Listener{
            HockeyPlayer hplayer = HGAPI.getPlayerManager().getHockeyPlayer(name);
            
 
-           if(hplayer.getType() != null){
-      		if(hplayer.getTeam().getWingers().contains(hplayer)){
-       			hplayer.getTeam().removeWinger(hplayer);
-    		}else if(hplayer.getTeam().getDefends().contains(hplayer)){
-    			hplayer.getTeam().removeDefend(hplayer);
-    		}else if(hplayer.getTeam().getGoalKeeper().equals(hplayer)){
-    			hplayer.getTeam().removeGoalkeeper();
-    		}
-           }
+           //if(hplayer.getType() != null){
+      		//if(hplayer.getTeam().getWingers().contains(hplayer)){
+       			//hplayer.getTeam().removeWinger(hplayer);
+    		//}else if(hplayer.getTeam().getDefends().contains(hplayer)){
+    			//hplayer.getTeam().removeDefend(hplayer);
+    		//}else if(hplayer.getTeam().getGoalKeeper().equals(hplayer)){
+    			//hplayer.getTeam().removeGoalkeeper();
+    		//}
+           //}
       		
       		
-    		hplayer.getArena().getPlayers().remove(hplayer);
-    		hplayer.getTeam().getMembers().remove(hplayer);
-    		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
+    		//hplayer.getArena().getPlayers().remove(hplayer);
+    		//hplayer.getTeam().getMembers().remove(hplayer);
+    		//HGAPI.getPlayerManager().removePlayer(hplayer.getName());
 
-			if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
-				int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
-				if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
-					hplayer.getArena().stopArena();
-				}
-			}
+           hplayer.getArena().leavePlayer(hplayer, false);
+           
+            // Link: ArenaRunnable
+			//if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+				//int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
+				//if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
+					//hplayer.getArena().stopArena();
+				//}
+			//}
 		}
 	}
 	
@@ -354,7 +356,9 @@ public class PlayerListener implements Listener{
 	if(HGAPI.getPlayerManager().getPlayers().containsKey(player.getName())){
 		HockeyPlayer hp = HGAPI.getPlayerManager().getHockeyPlayer(player.getName());
 		if(hp.getArena().isRunning()){
+		if(!hp.getAllowTeleport()){
 		event.setCancelled(true);
+		}
 		}
 	}
   }
@@ -385,28 +389,31 @@ public class PlayerListener implements Listener{
         if(HGAPI.getPlayerManager().getPlayers().containsKey(name)){
            HockeyPlayer hplayer = HGAPI.getPlayerManager().getHockeyPlayer(name);
                       
-           //hplayer.getArena().leavePlayer(hplayer);
+           hplayer.getArena().leavePlayer(hplayer, false);
 
-        if(hplayer.getType() != null){
-   		if(hplayer.getTeam().getWingers().contains(hplayer)){
-   			hplayer.getTeam().removeWinger(hplayer);
-		}else if(hplayer.getTeam().getDefends().contains(hplayer)){
-			hplayer.getTeam().removeDefend(hplayer);
-		}else if(hplayer.getTeam().getGoalKeeper().equals(hplayer)){
-			hplayer.getTeam().removeGoalkeeper();
-		}
-        }
+        //if(hplayer.getType() != null){
+   		//if(hplayer.getTeam().getWingers().contains(hplayer)){
+   			//hplayer.getTeam().removeWinger(hplayer);
+		//}else if(hplayer.getTeam().getDefends().contains(hplayer)){
+			//hplayer.getTeam().removeDefend(hplayer);
+		//}else if(hplayer.getTeam().getGoalKeeper().equals(hplayer)){
+			//hplayer.getTeam().removeGoalkeeper();
+		//}
+        //}
    		
-		hplayer.getArena().getPlayers().remove(hplayer);
-		hplayer.getTeam().getMembers().remove(hplayer);
-		HGAPI.getPlayerManager().removePlayer(hplayer.getName());
+		//hplayer.getArena().getPlayers().remove(hplayer);
+		//hplayer.getTeam().getMembers().remove(hplayer);
+		//HGAPI.getPlayerManager().removePlayer(hplayer.getName());
 		
-		if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
-			int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
-			if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
-				hplayer.getArena().stopArena();
-			}
-		}
+           
+           
+        //Link: ArenaRunnable
+		//if(hplayer.getArena().getPlayers().size() < HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers")){
+			//int min = HGAPI.getPlugin().getConfig().getInt("Game.MinPlayers") / 2;
+			//if(hplayer.getArena().getFirstTeam().getMembers().size() < min || hplayer.getArena().getSecondTeam().getMembers().size() < min){
+				//hplayer.getArena().stopArena();
+			//}
+		//}
 		
 		}
 	}

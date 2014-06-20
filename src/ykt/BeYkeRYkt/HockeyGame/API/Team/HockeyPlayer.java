@@ -13,6 +13,7 @@ public class HockeyPlayer{
 	private Team team = null;
 	private Arena arena = null;
 	private boolean ready = false;
+	private boolean teleport = false;
 	
 	public HockeyPlayer(Player player){
 		this.name = player.getName();
@@ -24,6 +25,14 @@ public class HockeyPlayer{
 	
 	public Arena getArena(){
 		return arena;
+	}
+	
+	public boolean getAllowTeleport(){
+		return teleport;
+	}
+	
+	public void setAllowTeleport(boolean flag){
+		this.teleport = flag;
 	}
 	
 	public void setArena(Arena arena){

@@ -1,10 +1,8 @@
 package ykt.BeYkeRYkt.HockeyGame;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -165,6 +163,7 @@ public class HG extends JavaPlugin{
 
 
 	private void checkConfig() {
+		reloadConfig(); //fix
 		boolean save = false;
 		if(getConfig().get("Enable-updater") == null){
 			getConfig().set("Enable-updater", true);
@@ -329,10 +328,7 @@ public class HG extends JavaPlugin{
 			//HGAPI.getArenaManager().save(arena);
 			arena.stopArena();
 		}
-		 
-
-		reloadConfig(); //fix
-		
+		 		
 		HandlerList.unregisterAll(this);
 		this.api = null;
 		this.hockey = null;
