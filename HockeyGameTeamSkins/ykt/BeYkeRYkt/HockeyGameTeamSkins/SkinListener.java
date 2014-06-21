@@ -40,8 +40,9 @@ public class SkinListener implements Listener{
 	@EventHandler
 	public void onPlayerAutobalance(PlayerAutobalanceEvent event){
 		HockeyPlayer player = event.getPlayer();
-		if(TeamSkins.getInstance().getConfig().getString("Skins." + player.getTeam().getName()) == null) return;
-		String type = TeamSkins.getInstance().getConfig().getString("Skins." + player.getTeam().getName());
+		TeamSkins.getInstance().getDisguisePlugin().undisguisePlayer(player.getBukkitPlayer());
+		if(TeamSkins.getInstance().getConfig().getString("Skins." + event.getNewTeam().getName()) == null) return;
+		String type = TeamSkins.getInstance().getConfig().getString("Skins." + event.getNewTeam().getName());
 		if(type.equalsIgnoreCase("none")) return;
 		TeamSkins.getInstance().getDisguisePlugin().disguisePlayer(player.getBukkitPlayer(), type);
 	}
